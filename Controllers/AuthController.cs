@@ -4,6 +4,7 @@ using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using BCrypt.Net;
+using Serilog;
 
 namespace backend.Controllers;
 
@@ -30,18 +31,22 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
+            Log.Warning("user-login-failed-----id:{Email}-----type:unknown-----reason:email-not-found", loginDto.Email);
             return Unauthorized(new { message = "Invalid email or password" });
-        }
+            }
 
         // 2. Verify hashed password with BCrypt
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
         if (!isPasswordValid)
         {
+            Log.Warning("user-login-failed-----id:{Id}-----type:{Role}-----reason:password-mismatch", user.Id, user.Role);
+
             return Unauthorized(new { message = "Invalid email or password" });
         }
 
         // 3. Generate JWT Token
         var token = _tokenService.GenerateToken(user);
+        Log.Information("user-login-success-----id:{Id}-----type:{Role}", user.Id, user.Role);
 
         return Ok(new
         {

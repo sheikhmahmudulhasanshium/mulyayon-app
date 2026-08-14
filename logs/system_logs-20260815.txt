@@ -1,0 +1,27 @@
+00:05:45-15-Aug-2026-----server-online-----id:system_kernel
+00:05:45-15-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+00:05:45-15-Aug-2026-----Now listening on: http://localhost:5000
+00:05:45-15-Aug-2026-----Application started. Press Ctrl+C to shut down.
+00:05:45-15-Aug-2026-----Hosting environment: Development
+00:05:45-15-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+00:05:59-15-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+00:05:59-15-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 200 null text/html;charset=utf-8 174.7792ms
+00:06:00-15-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+00:06:00-15-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 116.8169ms
+00:07:29-15-Aug-2026-----Request starting HTTP/1.1 POST http://localhost:5000/api/Auth/login - application/json 63
+00:07:29-15-Aug-2026-----Failed to determine the https port for redirect.
+00:07:36-15-Aug-2026-----Executing endpoint 'backend.Controllers.AuthController.Login (backend)'
+00:07:42-15-Aug-2026-----Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(backend.DTOs.LoginDto) on controller backend.Controllers.AuthController (backend).
+00:07:43-15-Aug-2026-----user-login-failed-----id:6a7e297056188f03852231fb-----type:Student-----reason:password-mismatch
+00:07:43-15-Aug-2026-----Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+00:07:43-15-Aug-2026-----Executed action backend.Controllers.AuthController.Login (backend) in 880.9858ms
+00:07:43-15-Aug-2026-----Executed endpoint 'backend.Controllers.AuthController.Login (backend)'
+00:07:43-15-Aug-2026-----Request finished HTTP/1.1 POST http://localhost:5000/api/Auth/login - 401 null application/json; charset=utf-8 14412.2655ms
+00:08:50-15-Aug-2026-----Request starting HTTP/1.1 POST http://localhost:5000/api/Auth/login - application/json 64
+00:08:50-15-Aug-2026-----Executing endpoint 'backend.Controllers.AuthController.Login (backend)'
+00:08:50-15-Aug-2026-----Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(backend.DTOs.LoginDto) on controller backend.Controllers.AuthController (backend).
+00:08:50-15-Aug-2026-----user-login-success-----id:6a7e297056188f03852231fb-----type:Student
+00:08:50-15-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+00:08:50-15-Aug-2026-----Executed action backend.Controllers.AuthController.Login (backend) in 485.5982ms
+00:08:50-15-Aug-2026-----Executed endpoint 'backend.Controllers.AuthController.Login (backend)'
+00:08:50-15-Aug-2026-----Request finished HTTP/1.1 POST http://localhost:5000/api/Auth/login - 200 null application/json; charset=utf-8 497.1694ms

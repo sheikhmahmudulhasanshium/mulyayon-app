@@ -1,7 +1,7 @@
 using backend.Models;
 using MongoDB.Driver;
 using BCrypt.Net;
-
+using Serilog;
 namespace backend.Data;
 
 public static class DbSeeder
@@ -59,6 +59,8 @@ public static class DbSeeder
                 }
             };
             await context.Users.InsertManyAsync(users);
+            Log.Information("3-users-added-----id:system-----type:seed-engine");
+
         }
     }
 }
