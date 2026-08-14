@@ -2,27 +2,52 @@ using backend.Data;
 using backend.Services;
 using backend.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Text;
-using Serilog; 
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss-dd-MMM-yyyy}-----{Message:lj}{NewLine}{Exception}")
     .WriteTo.File(
         path: "logs/system_logs-.txt", 
-        rollingInterval: RollingInterval.Day, // Creates a new file daily (prevents infinite growth)
+        rollingInterval: RollingInterval.Day,
         outputTemplate: "{Timestamp:HH:mm:ss-dd-MMM-yyyy}-----{Message:lj}{NewLine}{Exception}")
     .CreateLogger();
 
-// Bind Configuration Settings
+builder.Host.UseSerilog();
+
+// Bind Configurations
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
-// Register Services & DB Context
+// Register Services
 builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+// 3. Configure Built-In IP-Based Rate Limiting (DDoS Mitigation)
+builder.Services.AddRateLimiter(options =>
+{
+    // Return HTTP 429 (Too Many Requests) when limits are exceeded
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Apply rate limiting based on the client's IP address
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 60, // Max 60 requests...
+                QueueLimit = 0,   // Reject immediately (don't queue up requests)
+                Window = TimeSpan.FromMinutes(1) // ...per 1 minute
+            }));
+});
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>() 
@@ -50,19 +75,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Host.UseSerilog();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-// Configure Swagger to display the Authorize Lock Icon and accept JWT tokens
+
+// Configure Swagger with Authorize locks
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
-    { 
-        Title = "School Management API", 
-        Version = "v1" 
-    });
-
-    // 1. Define the JWT Bearer Security Scheme
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "School API", Version = "v1" });
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -70,25 +89,20 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Enter your JWT token directly. Example: 'eyJhG...'"
+        Description = "Enter JWT token directly."
     });
-
-    // 2. Apply this Security Requirement globally across all endpoints
     options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
             new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference { Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             Array.Empty<string>()
         }
     });
 });
+
 var app = builder.Build();
 
 // Run Database Seeder
@@ -96,16 +110,12 @@ using (var scope = app.Services.CreateScope())
 {
     try
     {
-        Console.WriteLine("Connecting to MongoDB and checking database state...");
         var context = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
         await DbSeeder.SeedAsync(context);
-        Console.WriteLine("Database check and seeding completed successfully.");
     }
     catch (Exception ex)
     {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Database seeding failed: {ex.Message}");
-        Console.ResetColor();
+        Log.Fatal($"Database seeding failed: {ex.Message}");
     }
 }
 
@@ -117,11 +127,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); // Must be placed before UseAuthorization
+app.UseRateLimiter(); // 4. Apply Rate Limiting Middleware (Must come before routing)
+
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllers();
-// 4. Log Server Online using Serilog
+
 Log.Information("server-online-----id:system_kernel");
 
 app.Run();
