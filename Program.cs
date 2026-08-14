@@ -1,14 +1,45 @@
 using backend.Data;
+using backend.Services;
 using backend.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure MongoDB Settings
-builder.Services.Configure<MongoDbSettings>(
-    builder.Configuration.GetSection("MongoDbSettings"));
+// Bind Configuration Settings
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
-// Register MongoDB Context
+// Register Services & DB Context
 builder.Services.AddSingleton<MongoDbContext>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+// Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>() 
+                  ?? throw new InvalidOperationException("JWT Configuration is missing.");
+
+var key = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -16,7 +47,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Safe Auto-seeding with Error Logging
+// Run Database Seeder
 using (var scope = app.Services.CreateScope())
 {
     try
@@ -29,18 +60,8 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine("CRITICAL ERROR DURING DATABASE SEEDING:");
-        Console.WriteLine(ex.Message);
-        if (ex.InnerException != null)
-        {
-            Console.WriteLine($"Inner Details: {ex.InnerException.Message}");
-        }
-        Console.WriteLine("Please check your MongoDB Connection String and Atlas IP access.");
-        Console.WriteLine("--------------------------------------------------");
+        Console.WriteLine($"Database seeding failed: {ex.Message}");
         Console.ResetColor();
-        
-        // Let the app continue starting up so you can access Swagger even if database fails
     }
 }
 
@@ -51,7 +72,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication(); // Must be placed before UseAuthorization
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
