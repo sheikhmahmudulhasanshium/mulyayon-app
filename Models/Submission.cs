@@ -1,3 +1,4 @@
+using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -23,8 +24,11 @@ public class Submission
     [BsonElement("answer")]
     public string Answer { get; set; } = string.Empty;
 
+    [BsonElement("attachmentUrl")]
+    public string? AttachmentUrl { get; set; } // Holds the URL of the Student's uploaded local homework PDF/Image (Nullable)
+
     [BsonElement("marks")]
-    public double? Marks { get; set; } // Nullable until graded
+    public double? Marks { get; set; } // Nullable until graded by Teacher
 
     [BsonElement("feedback")]
     public string Feedback { get; set; } = string.Empty;
