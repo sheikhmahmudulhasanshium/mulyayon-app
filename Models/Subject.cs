@@ -10,13 +10,16 @@ public class Subject
     public string? Id { get; set; }
 
     [BsonElement("name")]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty; // English term
+
+    [BsonElement("nameBn")]
+    public string NameBn { get; set; } = string.Empty; // Bangla term
 
     [BsonElement("courseId")]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string CourseId { get; set; } = string.Empty; // Links to Class/Course
+    public string CourseId { get; set; } = string.Empty;
 
     [BsonElement("teacherId")]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? TeacherId { get; set; } // Links to assigned Teacher User (Nullable)
+    public string? TeacherId { get; set; } // Nullable (Assigned by Admin)
 }

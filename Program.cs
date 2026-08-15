@@ -119,6 +119,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -127,7 +128,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseRateLimiter(); // 4. Apply Rate Limiting Middleware (Must come before routing)
+app.UseStaticFiles(); // 1. Add this line here to enable static file serving (/wwwroot)
+app.UseRateLimiter(); 
 
 app.UseAuthentication(); 
 app.UseAuthorization();

@@ -1,3 +1,4 @@
+using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -23,6 +24,9 @@ public class Assignment
 
     [BsonElement("isPublished")]
     public bool IsPublished { get; set; }
+
+    [BsonElement("attachmentUrl")]
+    public string? AttachmentUrl { get; set; } // Holds the URL of the uploaded local file (PDF/Image)
 
     [BsonElement("subjectId")]
     [BsonRepresentation(BsonType.ObjectId)]

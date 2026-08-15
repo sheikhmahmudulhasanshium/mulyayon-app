@@ -1,0 +1,13 @@
+00:48:00-16-Aug-2026-----server-online-----id:system_kernel
+00:48:00-16-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+00:48:00-16-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+00:48:00-16-Aug-2026-----Now listening on: http://localhost:5000
+00:48:00-16-Aug-2026-----Application started. Press Ctrl+C to shut down.
+00:48:00-16-Aug-2026-----Hosting environment: Development
+00:48:00-16-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+00:48:03-16-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+00:48:03-16-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 200 null text/html;charset=utf-8 297.8333ms
+00:48:03-16-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+00:48:03-16-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 9.0402ms
+00:48:04-16-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+00:48:04-16-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 199.9519ms
