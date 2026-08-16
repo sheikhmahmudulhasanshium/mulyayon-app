@@ -1,14 +1,49 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using backend.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog;
 
 namespace backend.Data;
 
+public class StudentSeedDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string CourseName { get; set; } = string.Empty;
+}
+
+public class TeacherSeedDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public List<string> Specialties { get; set; } = new();
+    public List<string> Versions { get; set; } = new();
+    public List<string> Levels { get; set; } = new();
+}
+
 public static class DbSeeder
 {
+    private static string ResolveFilePath(string fileName)
+    {
+        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        var path = Path.Combine(baseDir, fileName);
+        if (File.Exists(path)) return path;
+
+        var sourceDir = Path.Combine(baseDir, "..", "..", "..", "Data", fileName);
+        if (File.Exists(sourceDir)) return Path.GetFullPath(sourceDir);
+
+        return path;
+    }
+
     public static async Task SeedAsync(MongoDbContext context)
     {
-        // 1. Seed Courses (Programmatically generates both BV and EV for all classes)
+        // 1. Seed Courses
         var courseCount = await context.Courses.CountDocumentsAsync(Builders<Course>.Filter.Empty);
         if (courseCount == 0)
         {
@@ -24,23 +59,23 @@ public static class DbSeeder
                 ("Class 8", "অষ্টম শ্রেণী", "Secondary"),
                 ("Class 9", "নবম শ্রেণী", "Secondary"),
                 
-                // Class 10 Splits (New vs Candidate)
                 ("Class 10 (Science - New)", "দশম শ্রেণী (বিজ্ঞান - নতুন)", "Secondary"),
                 ("Class 10 (Science - Candidate)", "দশম শ্রেণী (বিজ্ঞান - পরীক্ষার্থী)", "Secondary"),
                 ("Class 10 (Business Studies - New)", "দশম শ্রেণী (ব্যবসায় শিক্ষা - নতুন)", "Secondary"),
                 ("Class 10 (Business Studies - Candidate)", "দশম শ্রেণী (ব্যবসায় শিক্ষা - পরীক্ষার্থী)", "Secondary"),
                 ("Class 10 (Humanities - New)", "দশম শ্রেণী (মানবিক - নতুন)", "Secondary"),
 
-                // Higher Secondary
                 ("Class 11 (Science)", "একাদশ শ্রেণী (বিজ্ঞান)", "Higher Secondary"),
-                ("Class 12 (Science)", "দ্বাদশ শ্রেণী (বিজ্ঞান)", "Higher Secondary")
+                ("Class 11 (Business Studies)", "একাদশ শ্রেণী (ব্যবসায় শিক্ষা)", "Higher Secondary"),
+                ("Class 11 (Humanities)", "একাদশ শ্রেণী (মানবিক)", "Higher Secondary"),
+                ("Class 12 (Science)", "দ্বাদশ শ্রেণী (বিজ্ঞান)", "Higher Secondary"),
+                ("Class 12 (Business Studies)", "দ্বাদশ শ্রেণী (ব্যবসায় শিক্ষা)", "Higher Secondary"),
+                ("Class 12 (Humanities)", "দ্বাদশ শ্রেণী (মানবিক)", "Higher Secondary")
             };
 
             var coursesToSeed = new List<Course>();
-
             foreach (var bc in baseCourses)
             {
-                // Generate Bangla Version (BV)
                 coursesToSeed.Add(new Course
                 {
                     Name = $"{bc.Name} (BV)",
@@ -49,7 +84,6 @@ public static class DbSeeder
                     Version = "Bangla"
                 });
 
-                // Generate English Version (EV)
                 coursesToSeed.Add(new Course
                 {
                     Name = $"{bc.Name} (EV)",
@@ -58,13 +92,12 @@ public static class DbSeeder
                     Version = "English"
                 });
             }
-
             await context.Courses.InsertManyAsync(coursesToSeed);
         }
 
         var allCourses = await context.Courses.Find(Builders<Course>.Filter.Empty).ToListAsync();
 
-        // 2. Helper Translation Dictionary for Subjects
+        // 2. Translation Dictionary
         var nameMap = new Dictionary<string, string>
         {
             { "Class 1", "প্রথম শ্রেণী" }, { "Class 2", "দ্বিতীয় শ্রেণী" }, { "Class 3", "তৃতীয় শ্রেণী" },
@@ -80,10 +113,16 @@ public static class DbSeeder
             { "Finance & Banking", "ফিন্যান্স ও ব্যাংকিং" }, { "Business Entrepreneurship", "ব্যবসায় উদ্যোগ" },
             { "History of Bangladesh & World Civilization", "বাংলাদেশ ও বিশ্বসভ্যতার ইতিহাস" },
             { "Geography & Environment", "ভূগোল ও পরিবেশ" }, { "Civics & Citizenship", "পৌরনীতি ও নাগরিকতা" },
-            { "1st Paper", "১ম পত্র" }, { "2nd Paper", "২য় পত্র" }
+            { "1st Paper", "১ম পত্র" }, { "2nd Paper", "২য় পত্র" },
+            { "Business", "ব্যবসায়" }, { "Studies", "শিক্ষা" }, { "Humanities", "মানবিক" },
+            { "Organization", "সংগঠন" }, { "Management", "ব্যবস্থাপনা" }, { "Finance", "ফিন্যান্স," }, 
+            { "Banking", "ব্যাংকিং" }, { "Insurance", "বিমা" }, { "Production", "উৎপাদন" }, 
+            { "Marketing", "বিপণন" }, { "Civics", "পৌরনীতি" }, { "Good", "সু" }, 
+            { "Governance", "শাসন" }, { "Economics", "অর্থনীতি" }, { "Geography", "ভূগোল" }, 
+            { "Logic", "যুক্তিবিদ্যা" }, { "&", "ও" }
         };
 
-        // 3. Seed Subjects (NCTB Aligned, mapped dynamically for BV & EV)
+        // 3. Seed Subjects
         var subjectCount = await context.Subjects.CountDocumentsAsync(Builders<Subject>.Filter.Empty);
         if (subjectCount == 0)
         {
@@ -95,7 +134,6 @@ public static class DbSeeder
                 var langSuffix = isEv ? " (EV)" : "";
                 var bnSuffix = isEv ? " (ইংরেজি সংস্করণ)" : " (বাংলা সংস্করণ)";
 
-                // Helper method to dynamically translate subject names to Bangla script
                 string GetBnName(string englishSubjectName)
                 {
                     var bnBuilder = new System.Text.StringBuilder();
@@ -115,7 +153,7 @@ public static class DbSeeder
                         }
                         else
                         {
-                            bnBuilder.Append(part + " "); // Fallback if no translation found
+                            bnBuilder.Append(part + " ");
                         }
                     }
                     return bnBuilder.ToString().Trim() + bnSuffix;
@@ -131,7 +169,6 @@ public static class DbSeeder
                     });
                 }
 
-                // Parse base class name to split subjects properly
                 var baseName = course.Name.Replace(" (BV)", "").Replace(" (EV)", "");
 
                 if (course.Level == "Primary")
@@ -175,7 +212,6 @@ public static class DbSeeder
                     AddSubject("Class 10 English 2nd Paper" + langSuffix);
                     AddSubject("Class 10 Mathematics" + langSuffix);
                     AddSubject("Class 10 ICT" + langSuffix);
-                    
                     AddSubject("Class 10 Physics" + langSuffix);
                     AddSubject("Class 10 Chemistry" + langSuffix);
                     AddSubject("Class 10 Biology" + langSuffix);
@@ -189,7 +225,6 @@ public static class DbSeeder
                     AddSubject("Class 10 English 2nd Paper" + langSuffix);
                     AddSubject("Class 10 Mathematics" + langSuffix);
                     AddSubject("Class 10 ICT" + langSuffix);
-
                     AddSubject("Class 10 Accounting" + langSuffix);
                     AddSubject("Class 10 Finance & Banking" + langSuffix);
                     AddSubject("Class 10 Business Entrepreneurship" + langSuffix);
@@ -202,7 +237,6 @@ public static class DbSeeder
                     AddSubject("Class 10 English 2nd Paper" + langSuffix);
                     AddSubject("Class 10 Mathematics" + langSuffix);
                     AddSubject("Class 10 ICT" + langSuffix);
-
                     AddSubject("Class 10 History of Bangladesh & World Civilization" + langSuffix);
                     AddSubject("Class 10 Geography & Environment" + langSuffix);
                     AddSubject("Class 10 Civics & Citizenship" + langSuffix);
@@ -215,54 +249,322 @@ public static class DbSeeder
                     AddSubject($"{baseName} English 2nd Paper" + langSuffix);
                     AddSubject($"{baseName} ICT" + langSuffix);
 
-                    AddSubject($"{baseName} Physics 1st Paper" + langSuffix);
-                    AddSubject($"{baseName} Physics 2nd Paper" + langSuffix);
-                    AddSubject($"{baseName} Chemistry 1st Paper" + langSuffix);
-                    AddSubject($"{baseName} Chemistry 2nd Paper" + langSuffix);
-                    AddSubject($"{baseName} Higher Mathematics 1st Paper" + langSuffix);
-                    AddSubject($"{baseName} Higher Mathematics 2nd Paper" + langSuffix);
-                    AddSubject($"{baseName} Biology 1st Paper" + langSuffix);
-                    AddSubject($"{baseName} Biology 2nd Paper" + langSuffix);
+                    if (course.Name.Contains("Science"))
+                    {
+                        AddSubject($"{baseName} Physics 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Physics 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Chemistry 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Chemistry 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Higher Mathematics 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Higher Mathematics 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Biology 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Biology 2nd Paper" + langSuffix);
+                    }
+                    else if (course.Name.Contains("Business Studies"))
+                    {
+                        AddSubject($"{baseName} Accounting 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Accounting 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Business Organization & Management 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Business Organization & Management 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Finance Banking & Insurance 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Finance Banking & Insurance 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Production Management & Marketing 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Production Management & Marketing 2nd Paper" + langSuffix);
+                    }
+                    else if (course.Name.Contains("Humanities"))
+                    {
+                        AddSubject($"{baseName} Civics & Good Governance 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Civics & Good Governance 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Economics 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Economics 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Geography 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Geography 2nd Paper" + langSuffix);
+                        AddSubject($"{baseName} Logic 1st Paper" + langSuffix);
+                        AddSubject($"{baseName} Logic 2nd Paper" + langSuffix);
+                    }
                 }
             }
-
             await context.Subjects.InsertManyAsync(subjectsToSeed);
         }
 
-        // 4. Seed Default Users
-        var userCount = await context.Users.CountDocumentsAsync(Builders<User>.Filter.Empty);
-        if (userCount == 0)
-        {
-            var scienceCandidateClass = allCourses.First(c => c.Name == "Class 10 (Science - Candidate) (BV)");
+        var allSubjects = await context.Subjects.Find(Builders<Subject>.Filter.Empty).ToListAsync();
 
-            var users = new List<User>
+        // 4. Ensure Demo Admin Credentials Exist
+        var adminExists = await context.Users.CountDocumentsAsync(u => u.Email == "admin@school.com") > 0;
+        if (!adminExists)
+        {
+            await context.Users.InsertOneAsync(new User
             {
-                new User
+                Name = "School Admin",
+                Email = "admin@school.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
+                Role = "Admin"
+            });
+            Log.Information("Demo Admin credentials verified.");
+        }
+
+        // 5. Seed Teachers
+        var teacherCount = await context.Users.CountDocumentsAsync(u => u.Role == "Teacher" && u.Email != "teacher@school.com");
+        var teacherFilePath = ResolveFilePath("teacher.json");
+        List<TeacherSeedDto>? teacherDtos = null;
+
+        if (teacherCount == 0)
+        {
+            if (File.Exists(teacherFilePath))
+            {
+                try
                 {
-                    Name = "School Admin",
-                    Email = "admin@school.com",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
-                    Role = Role.Admin
-                },
-                new User
+                    var jsonString = await File.ReadAllTextAsync(teacherFilePath);
+                    teacherDtos = JsonSerializer.Deserialize<List<TeacherSeedDto>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    Log.Information("Loaded teachers successfully from teacher.json");
+                }
+                catch (JsonException ex)
                 {
-                    Name = "John Teacher",
+                    Log.Error(ex, "JSON Syntax Error inside teacher.json. Falling back to programmatic teacher generation.");
+                }
+            }
+
+            // Fallback generation of 50 teachers if teacher.json is missing or corrupt
+            if (teacherDtos == null)
+            {
+                Log.Warning("teacher.json not found or corrupt. Generating 50 Marvel Teachers programmatically...");
+                teacherDtos = GenerateFallbackTeachers();
+            }
+
+var teachersToInsert = teacherDtos.Select(dto => new User
+            {
+                Name = dto.Name,
+                Email = dto.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Teacher@123"),
+                Role = "Teacher",
+                // Map the fields here so they write to the database:
+                Specialties = dto.Specialties,
+                Versions = dto.Versions,
+                Levels = dto.Levels
+            }).ToList();
+            // Inject Demo Teacher Credentials
+            var demoTeacherExists = await context.Users.CountDocumentsAsync(u => u.Email == "teacher@school.com") > 0;
+            if (!demoTeacherExists)
+            {
+                teachersToInsert.Add(new User
+                {
+                    Name = "John Teacher (Demo)",
                     Email = "teacher@school.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Teacher@123"),
-                    Role = Role.Teacher
-                },
-                new User
-                {
-                    Name = "Alex Student",
-                    Email = "student@school.com",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Student@123"),
-                    Role = Role.Student,
-                    CourseId = scienceCandidateClass.Id
-                }
-            };
+                    Role = "Teacher"
+                });
 
-            await context.Users.InsertManyAsync(users);
-            Log.Information("3-users-added-----id:system-----type:seed-engine");
+                teacherDtos.Add(new TeacherSeedDto
+                {
+                    Name = "John Teacher (Demo)",
+                    Email = "teacher@school.com",
+                    Specialties = new List<string> { "Bangla", "English", "Mathematics", "Science" },
+                    Versions = new List<string> { "Bangla", "English" },
+                    Levels = new List<string> { "Primary", "Secondary", "Higher Secondary" }
+                });
+            }
+
+            await context.Users.InsertManyAsync(teachersToInsert);
+            var savedTeachers = await context.Users.Find(u => u.Role == "Teacher").ToListAsync();
+
+            var rand = new Random();
+            foreach (var subject in allSubjects)
+            {
+                var parentCourse = allCourses.FirstOrDefault(c => c.Id == subject.CourseId);
+                if (parentCourse == null) continue;
+
+                var qualified = savedTeachers.Where(t =>
+                {
+                    var dto = teacherDtos.FirstOrDefault(d => d.Email.Equals(t.Email, StringComparison.OrdinalIgnoreCase));
+                    if (dto == null) return false;
+
+                    bool levelMatch = dto.Levels.Contains(parentCourse.Level);
+                    bool versionMatch = dto.Versions.Contains(parentCourse.Version);
+                    bool specMatch = dto.Specialties.Any(s => subject.Name.Contains(s, StringComparison.OrdinalIgnoreCase));
+
+                    return levelMatch && versionMatch && specMatch;
+                }).ToList();
+
+                if (qualified.Count < 5)
+                {
+                    qualified = savedTeachers;
+                }
+
+                var selected = qualified.OrderBy(_ => rand.Next()).Take(5).Select(t => t.Id!).ToList();
+
+                await context.Subjects.UpdateOneAsync(
+                    Builders<Subject>.Filter.Eq(s => s.Id, subject.Id),
+                    Builders<Subject>.Update.Set("teacherIds", selected)
+                );
+            }
+            Log.Information("Teachers mapped to Subjects successfully.");
         }
+
+        // 6. Seed Students
+        var studentCount = await context.Users.CountDocumentsAsync(u => u.Role == "Student" && u.Email != "student@school.com");
+        var studentFilePath = ResolveFilePath("student.json");
+        if (!File.Exists(studentFilePath))
+        {
+            studentFilePath = ResolveFilePath("students.json");
+        }
+
+        List<StudentSeedDto>? studentDtos = null;
+
+        if (studentCount == 0)
+        {
+            if (File.Exists(studentFilePath))
+            {
+                try
+                {
+                    var jsonString = await File.ReadAllTextAsync(studentFilePath);
+                    studentDtos = JsonSerializer.Deserialize<List<StudentSeedDto>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    Log.Information("Loaded students successfully from student.json");
+                }
+                catch (JsonException ex)
+                {
+                    Log.Error(ex, "JSON Syntax Error inside student.json. Falling back to programmatic student generation.");
+                }
+            }
+
+            // Fallback generation of 400 students if student.json is missing or corrupt
+            if (studentDtos == null)
+            {
+                Log.Warning("student.json not found or corrupt. Generating 400 Marvel Students programmatically...");
+                studentDtos = GenerateFallbackStudents(allCourses);
+            }
+
+            var studentsToInsert = new List<User>();
+            var rand = new Random();
+
+            // Inject Demo Student Credentials
+            var demoStudentExists = await context.Users.CountDocumentsAsync(u => u.Email == "student@school.com") > 0;
+            if (!demoStudentExists)
+            {
+                var targetCourse = allCourses.FirstOrDefault(c => c.Name.Equals("Class 10 (Science - Candidate) (BV)", StringComparison.OrdinalIgnoreCase)) ?? allCourses.FirstOrDefault();
+                if (targetCourse != null)
+                {
+                    studentsToInsert.Add(new User
+                    {
+                        Name = "Alex Student (Demo)",
+                        Email = "student@school.com",
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword("Student@123"),
+                        Role = "Student",
+                        CourseId = targetCourse.Id
+                    });
+                }
+            }
+
+            foreach (var course in allCourses)
+            {
+                var assignedDtos = studentDtos
+                    .Where(d => d.CourseName.Equals(course.Name, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                int count = assignedDtos.Count;
+                for (int i = 0; i < Math.Max(10, count); i++)
+                {
+                    StudentSeedDto baseDto;
+                    string finalName;
+                    string finalEmail;
+
+                    if (i < count)
+                    {
+                        baseDto = assignedDtos[i];
+                        finalName = baseDto.Name;
+                        finalEmail = baseDto.Email;
+                    }
+                    else
+                    {
+                        var template = assignedDtos.Count > 0 ? assignedDtos[rand.Next(assignedDtos.Count)] : studentDtos[rand.Next(studentDtos.Count)];
+                        var nameParts = template.Name.Split(' ');
+                        var baseName = nameParts.First();
+                        var suffix = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : "Variant";
+
+                        finalName = $"{baseName} ({suffix} Variant #{i + 1})";
+                        finalEmail = $"{baseName.ToLower().Replace(".", "")}.clone{i + 1}@school.com";
+                    }
+
+                    studentsToInsert.Add(new User
+                    {
+                        Name = finalName,
+                        Email = finalEmail,
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword("Student@123"),
+                        Role = "Student",
+                        CourseId = course.Id
+                    });
+                }
+            }
+
+            if (studentsToInsert.Any())
+            {
+                await context.Users.InsertManyAsync(studentsToInsert);
+                Log.Information($"Successfully seeded {studentsToInsert.Count} students.");
+            }
+        }
+    }
+
+    // Programmatic Fallback Generator for 50 Teachers
+    private static List<TeacherSeedDto> GenerateFallbackTeachers()
+    {
+        var specialties = new List<string> { "Bangla", "English", "Mathematics", "Science", "Physics", "Chemistry", "Biology", "ICT", "Accounting", "Geography", "History" };
+        var levels = new List<string> { "Primary", "Secondary", "Higher Secondary" };
+        var versions = new List<string> { "Bangla", "English" };
+
+        var firstNames = new[] { "Charles", "Tony", "Stephen", "Bruce", "Hank", "Otto", "Norman", "Reed", "Emma", "Loki", "Steve", "Natasha", "Clint", "Thor", "Wanda", "Matt", "Luke", "Danny", "Jessica", "Carol", "Susan", "Johnny", "Ben", "Jean", "Scott" };
+        var lastNames = new[] { "Xavier", "Stark", "Strange", "Banner", "Pym", "Octavius", "Osborn", "Richards", "Frost", "Laufeyson", "Rogers", "Romanoff", "Barton", "Odinson", "Maximoff", "Murdock", "Cage", "Rand", "Jones", "Danvers", "Storm", "Grimm", "Grey", "Summers" };
+
+        var generated = new List<TeacherSeedDto>();
+        var rand = new Random();
+
+        for (int i = 0; i < 50; i++)
+        {
+            var firstName = firstNames[i % firstNames.Length];
+            var lastName = lastNames[(i + 5) % lastNames.Length];
+            var baseName = $"{firstName} {lastName}";
+            if (generated.Any(t => t.Name == baseName))
+            {
+                baseName = $"{baseName} #{i}";
+            }
+
+            generated.Add(new TeacherSeedDto
+            {
+                Name = baseName,
+                Email = $"{firstName.ToLower()}.{lastName.ToLower()}{i}@school.com",
+                Specialties = specialties.OrderBy(_ => rand.Next()).Take(3).ToList(),
+                Levels = levels.OrderBy(_ => rand.Next()).Take(2).ToList(),
+                Versions = versions.OrderBy(_ => rand.Next()).Take(2).ToList()
+            });
+        }
+        return generated;
+    }
+
+    // Programmatic Fallback Generator for 400 Students
+    private static List<StudentSeedDto> GenerateFallbackStudents(List<Course> courses)
+    {
+        var firstNames = new[] { "Peter", "Gwen", "Miles", "Ned", "Harry", "Flash", "Mary", "Liz", "Betty", "Anya", "Kamala", "Bobby", "Kitty", "Jubilee", "Rogue", "Remy", "Piotr", "Illyana", "Sam", "Roberto", "Scott", "Jean", "Warren", "Hank", "Alex", "Lorna", "Billy", "Tommy", "Teddy", "David", "America", "Cassie", "Kate", "Eli", "Noh", "Laura", "Gabby", "Quentin", "Glob", "Hisako" };
+        var lastNames = new[] { "Parker", "Stacy", "Morales", "Leeds", "Osborn", "Thompson", "Watson", "Allan", "Brant", "Corazon", "Khan", "Drake", "Pryde", "Lee", "Raven", "LeBeau", "Rasputin", "Rasputina", "Guthrie", "daCosta", "Summers", "Grey", "Worthington", "McCoy", "Dane", "Kaplan", "Shepherd", "Altman", "Alleyne", "Chavez", "Lang", "Bishop", "Bradley", "Kree", "Kinney", "Quire", "Herman", "Ichiki" };
+
+        var generated = new List<StudentSeedDto>();
+        var rand = new Random();
+        int emailIdCounter = 1;
+
+        // Ensure 10 students are generated for every course
+        foreach (var course in courses)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                var fName = firstNames[rand.Next(firstNames.Length)];
+                var lName = lastNames[rand.Next(lastNames.Length)];
+                var name = $"{fName} {lName}";
+
+                generated.Add(new StudentSeedDto
+                {
+                    Name = name,
+                    Email = $"{fName.ToLower()}.{lName.ToLower()}{emailIdCounter++}@school.com",
+                    CourseName = course.Name
+                });
+            }
+        }
+        return generated;
     }
 }

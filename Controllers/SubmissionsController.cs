@@ -115,19 +115,24 @@ public class SubmissionsController : ControllerBase
         return Ok(new { message = "Submission updated successfully" });
     }
 
-    // 3. Grade a Submission (Teacher Only)
+    // 3. Grade or Change Grade of a Submission (Teacher & Admin)
     [HttpPost("{id}/grade")]
-    [Authorize(Roles = Role.Teacher)]
+    [Authorize(Roles = "Teacher,Admin")] // Updated to allow both Roles
     public async Task<IActionResult> GradeSubmission(string id, [FromBody] GradeSubmissionDto dto)
     {
-        var teacherId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var submission = await _context.Submissions.Find(s => s.Id == id).FirstOrDefaultAsync();
+        var graderId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (string.IsNullOrEmpty(graderId)) return Unauthorized();
 
+        var submission = await _context.Submissions.Find(s => s.Id == id).FirstOrDefaultAsync();
         if (submission == null) return NotFound();
 
-        // Verify that this teacher actually owns the parent assignment
         var assignment = await _context.Assignments.Find(a => a.Id == submission.AssignmentId).FirstOrDefaultAsync();
-        if (assignment == null || assignment.TeacherId != teacherId)
+        if (assignment == null) return BadRequest(new { message = "Parent assignment not found." });
+
+        // SECURITY CHECK: 
+        // Admins can grade anything. Teachers can only grade their own assignments.
+        if (role == Role.Teacher && assignment.TeacherId != graderId)
         {
             return Forbid();
         }
@@ -138,6 +143,7 @@ public class SubmissionsController : ControllerBase
             return BadRequest(new { message = $"Marks must be between 0 and the assignment maximum of {assignment.MaxMarks}" });
         }
 
+        // Update submission status to Graded and save marks
         var update = Builders<Submission>.Update
             .Set(s => s.Marks, dto.Marks)
             .Set(s => s.Feedback, dto.Feedback)
@@ -145,7 +151,7 @@ public class SubmissionsController : ControllerBase
 
         await _context.Submissions.UpdateOneAsync(s => s.Id == id, update);
 
-        Log.Information("teacher-graded-submission-----teacherId:{TeacherId}-----submissionId:{Id}-----marks:{Marks}", teacherId, id, dto.Marks);
+        Log.Information("submission-graded-----id:{Id}-----gradedBy:{GraderId}-----role:{Role}-----marks:{Marks}", id, graderId, role, dto.Marks);
         return Ok(new { message = "Submission graded successfully" });
     }
 

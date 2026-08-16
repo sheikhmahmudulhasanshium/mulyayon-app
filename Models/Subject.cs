@@ -10,16 +10,17 @@ public class Subject
     public string? Id { get; set; }
 
     [BsonElement("name")]
-    public string Name { get; set; } = string.Empty; // English term
+    public string Name { get; set; } = string.Empty;
 
     [BsonElement("nameBn")]
-    public string NameBn { get; set; } = string.Empty; // Bangla term
+    public string NameBn { get; set; } = string.Empty; // Added to match seeder properties
 
     [BsonElement("courseId")]
     [BsonRepresentation(BsonType.ObjectId)]
     public string CourseId { get; set; } = string.Empty;
 
-    [BsonElement("teacherId")]
+    // CHANGED: Represent multiple assigned teachers as an array of ObjectIds
+    [BsonElement("teacherIds")]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? TeacherId { get; set; } // Nullable (Assigned by Admin)
+    public List<string> TeacherIds { get; set; } = new();
 }

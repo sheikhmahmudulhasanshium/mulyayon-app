@@ -1,8 +1,6 @@
+using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Text.Json.Serialization;
-
-namespace backend.Models;
 
 public class User
 {
@@ -26,4 +24,14 @@ public class User
     [BsonElement("courseId")]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? CourseId { get; set; } // Nullable (Students only)
+
+    // ADD THESE OPTIONAL PROPERTIES FOR TEACHERS:
+    [BsonElement("specialties")]
+    public List<string>? Specialties { get; set; }
+
+    [BsonElement("versions")]
+    public List<string>? Versions { get; set; }
+
+    [BsonElement("levels")]
+    public List<string>? Levels { get; set; }
 }

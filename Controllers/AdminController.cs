@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace backend.Controllers;
 
@@ -27,7 +31,6 @@ public class AdminController : ControllerBase
     [HttpPost("courses")]
     public async Task<IActionResult> CreateCourse([FromBody] CreateCourseDto dto)
     {
-        // Check for duplicate course name (case-insensitive)
         var duplicateExists = await _context.Courses
             .Find(c => c.Name.ToLower() == dto.Name.ToLower())
             .AnyAsync();
@@ -50,17 +53,16 @@ public class AdminController : ControllerBase
         var courses = await _context.Courses.Find(_ => true).ToListAsync();
         return Ok(courses);
     }
-[HttpPatch("courses/{id}")]
+
+    [HttpPatch("courses/{id}")]
     public async Task<IActionResult> UpdateCourse(string id, [FromBody] UpdateCourseDto dto)
     {
-        // 1. Verify Course exists
         var course = await _context.Courses.Find(c => c.Id == id).FirstOrDefaultAsync();
         if (course == null)
         {
             return NotFound(new { message = "Course not found" });
         }
 
-        // 2. Prevent duplicate course names
         var duplicateExists = await _context.Courses
             .Find(c => c.Name.ToLower() == dto.Name.ToLower() && c.Id != id)
             .AnyAsync();
@@ -70,13 +72,13 @@ public class AdminController : ControllerBase
             return BadRequest(new { message = $"A Course/Class named '{dto.Name}' already exists." });
         }
 
-        // 3. Update
         var update = Builders<Course>.Update.Set(c => c.Name, dto.Name);
         await _context.Courses.UpdateOneAsync(c => c.Id == id, update);
 
         Log.Information("course-updated-----id:{Id}-----newName:{Name}", id, dto.Name);
         return Ok(new { message = "Course updated successfully" });
     }
+
     [HttpDelete("courses/{id}")]
     public async Task<IActionResult> DeleteCourse(string id)
     {
@@ -86,13 +88,11 @@ public class AdminController : ControllerBase
             return NotFound(new { message = "Course not found" });
         }
 
-        // Clean up linked subjects when a course is deleted
         await _context.Subjects.DeleteManyAsync(s => s.CourseId == id);
 
         Log.Information("course-removed-----id:{Id}", id);
         return Ok(new { message = "Course and linked subjects deleted successfully" });
     }
-    
 
     // ==========================================
     // 2. SUBJECT MANAGEMENT
@@ -107,7 +107,6 @@ public class AdminController : ControllerBase
             return BadRequest(new { message = "Target Course not found" });
         }
 
-        // Check for duplicate subject name in this specific course
         var duplicateExists = await _context.Subjects
             .Find(s => s.Name.ToLower() == dto.Name.ToLower() && s.CourseId == dto.CourseId)
             .AnyAsync();
@@ -130,7 +129,8 @@ public class AdminController : ControllerBase
         var subjects = await _context.Subjects.Find(_ => true).ToListAsync();
         return Ok(subjects);
     }
-[HttpPatch("subjects/{id}")]
+
+    [HttpPatch("subjects/{id}")]
     public async Task<IActionResult> UpdateSubject(string id, [FromBody] UpdateSubjectDto dto)
     {
         var subject = await _context.Subjects.Find(s => s.Id == id).FirstOrDefaultAsync();
@@ -142,7 +142,6 @@ public class AdminController : ControllerBase
         var updateBuilder = Builders<Subject>.Update;
         var updates = new List<UpdateDefinition<Subject>>();
 
-        // Update CourseId if provided
         if (!string.IsNullOrEmpty(dto.CourseId))
         {
             var courseExists = await _context.Courses.Find(c => c.Id == dto.CourseId).AnyAsync();
@@ -153,7 +152,6 @@ public class AdminController : ControllerBase
             updates.Add(updateBuilder.Set(s => s.CourseId, dto.CourseId));
         }
 
-        // Update Name if provided
         if (!string.IsNullOrEmpty(dto.Name))
         {
             var targetCourseId = dto.CourseId ?? subject.CourseId;
@@ -176,6 +174,7 @@ public class AdminController : ControllerBase
 
         return Ok(new { message = "Subject updated successfully" });
     }
+
     [HttpDelete("subjects/{id}")]
     public async Task<IActionResult> DeleteSubject(string id)
     {
@@ -242,45 +241,6 @@ public class AdminController : ControllerBase
         return Ok(users);
     }
 
-    [HttpDelete("users/{id}")]
-    public async Task<IActionResult> DeleteUser(string id)
-    {
-        var result = await _context.Users.DeleteOneAsync(u => u.Id == id);
-        if (result.DeletedCount == 0)
-        {
-            return NotFound(new { message = "User not found" });
-        }
-
-        Log.Information("user-removed-----id:{Id}", id);
-        return Ok(new { message = "User deleted successfully" });
-    }
-
-    // ==========================================
-    // 4. TEACHER ASSIGNMENT
-    // ==========================================
-
-    [HttpPost("assign-teacher")]
-    public async Task<IActionResult> AssignTeacher([FromBody] AssignTeacherDto dto)
-    {
-        var subject = await _context.Subjects.Find(s => s.Id == dto.SubjectId).FirstOrDefaultAsync();
-        if (subject == null)
-        {
-            return BadRequest(new { message = "Subject not found" });
-        }
-
-        var teacher = await _context.Users.Find(u => u.Id == dto.TeacherId && u.Role == Role.Teacher).FirstOrDefaultAsync();
-        if (teacher == null)
-        {
-            return BadRequest(new { message = "Teacher user not found or is not a Teacher" });
-        }
-
-        var filter = Builders<Subject>.Filter.Eq(s => s.Id, dto.SubjectId);
-        var update = Builders<Subject>.Update.Set(s => s.TeacherId, dto.TeacherId);
-        await _context.Subjects.UpdateOneAsync(filter, update);
-
-        Log.Information("teacher-assigned-to-subject-----teacherId:{TeacherId}-----subjectId:{SubjectId}", dto.TeacherId, dto.SubjectId);
-        return Ok(new { message = "Teacher assigned to subject successfully" });
-    }
     [HttpPatch("users/{id}")]
     public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto dto)
     {
@@ -293,13 +253,11 @@ public class AdminController : ControllerBase
         var updateBuilder = Builders<User>.Update;
         var updates = new List<UpdateDefinition<User>>();
 
-        // Update Name if provided
         if (!string.IsNullOrEmpty(dto.Name))
         {
             updates.Add(updateBuilder.Set(u => u.Name, dto.Name));
         }
 
-        // Update Email if provided
         if (!string.IsNullOrEmpty(dto.Email))
         {
             var emailExists = await _context.Users.Find(u => u.Email == dto.Email && u.Id != id).AnyAsync();
@@ -310,7 +268,6 @@ public class AdminController : ControllerBase
             updates.Add(updateBuilder.Set(u => u.Email, dto.Email));
         }
 
-        // Update CourseId if Student
         if (!string.IsNullOrEmpty(dto.CourseId))
         {
             if (user.Role != Role.Student)
@@ -333,4 +290,228 @@ public class AdminController : ControllerBase
 
         return Ok(new { message = "User updated successfully" });
     }
+
+    [HttpDelete("users/{id}")]
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        var result = await _context.Users.DeleteOneAsync(u => u.Id == id);
+        if (result.DeletedCount == 0)
+        {
+            return NotFound(new { message = "User not found" });
+        }
+
+        Log.Information("user-removed-----id:{Id}", id);
+        return Ok(new { message = "User deleted successfully" });
+    }
+
+    // ==========================================
+    // 4. TEACHER ALLOCATION & AVAILABILITY
+    // ==========================================
+
+    [HttpPost("assign-teacher")]
+    public async Task<IActionResult> AssignTeacher([FromBody] AssignTeacherDto dto)
+    {
+        var subject = await _context.Subjects.Find(s => s.Id == dto.SubjectId).FirstOrDefaultAsync();
+        if (subject == null)
+        {
+            return BadRequest(new { message = "Subject not found" });
+        }
+
+        var teacher = await _context.Users.Find(u => u.Id == dto.TeacherId && u.Role == Role.Teacher).FirstOrDefaultAsync();
+        if (teacher == null)
+        {
+            return BadRequest(new { message = "Teacher user not found or is not a Teacher" });
+        }
+
+        var filter = Builders<Subject>.Filter.Eq(s => s.Id, dto.SubjectId);
+        var update = Builders<Subject>.Update.AddToSet(s => s.TeacherIds, dto.TeacherId);
+        await _context.Subjects.UpdateOneAsync(filter, update);
+
+        Log.Information("teacher-assigned-to-subject-----teacherId:{TeacherId}-----subjectId:{SubjectId}", dto.TeacherId, dto.SubjectId);
+        return Ok(new { message = "Teacher assigned to subject successfully" });
+    }
+
+    [HttpPost("unassign-teacher")]
+    public async Task<IActionResult> UnassignTeacher([FromBody] AssignTeacherDto dto)
+    {
+        var subject = await _context.Subjects.Find(s => s.Id == dto.SubjectId).FirstOrDefaultAsync();
+        if (subject == null)
+        {
+            return BadRequest(new { message = "Subject not found" });
+        }
+
+        var filter = Builders<Subject>.Filter.Eq(s => s.Id, dto.SubjectId);
+        var update = Builders<Subject>.Update.Pull(s => s.TeacherIds, dto.TeacherId);
+        await _context.Subjects.UpdateOneAsync(filter, update);
+
+        Log.Information("teacher-unassigned-from-subject-----teacherId:{TeacherId}-----subjectId:{SubjectId}", dto.TeacherId, dto.SubjectId);
+        return Ok(new { message = "Teacher unassigned from subject successfully" });
+    }
+
+    [HttpGet("teachers/unassigned")]
+    public async Task<IActionResult> GetUnassignedTeachers()
+    {
+        var subjects = await _context.Subjects.Find(_ => true).ToListAsync();
+        var assignedTeacherIds = subjects
+            .Where(s => s.TeacherIds != null)
+            .SelectMany(s => s.TeacherIds)
+            .Distinct()
+            .ToList();
+
+        // Warning CS8604 fixed: u.Id is validated not null before passing to Contains()
+        var unassignedTeachers = await _context.Users
+            .Find(u => u.Role == Role.Teacher && u.Id != null && !assignedTeacherIds.Contains(u.Id))
+            .ToListAsync();
+
+        return Ok(new
+        {
+            count = unassignedTeachers.Count,
+            teachers = unassignedTeachers
+        });
+    }
+
+    [HttpGet("teachers/search")]
+    public async Task<IActionResult> SearchTeachers(
+        [FromQuery] string? level,
+        [FromQuery] string? specialty,
+        [FromQuery] string? version,
+        [FromQuery] bool onlyUnassigned = false)
+    {
+        var filterBuilder = Builders<User>.Filter;
+        var filters = new List<FilterDefinition<User>>
+        {
+            filterBuilder.Eq(u => u.Role, Role.Teacher)
+        };
+
+        if (!string.IsNullOrEmpty(level))
+        {
+            filters.Add(filterBuilder.AnyEq(u => u.Levels, level));
+        }
+
+        if (!string.IsNullOrEmpty(specialty))
+        {
+            filters.Add(filterBuilder.AnyEq(u => u.Specialties, specialty));
+        }
+
+        if (!string.IsNullOrEmpty(version))
+        {
+            filters.Add(filterBuilder.AnyEq(u => u.Versions, version));
+        }
+
+        var combinedFilter = filterBuilder.And(filters);
+        var teachers = await _context.Users.Find(combinedFilter).ToListAsync();
+
+        if (onlyUnassigned)
+        {
+            var subjects = await _context.Subjects.Find(_ => true).ToListAsync();
+            var assignedIds = subjects
+                .Where(s => s.TeacherIds != null)
+                .SelectMany(s => s.TeacherIds)
+                .Distinct()
+                .ToList();
+
+            // Warning CS8604 fixed: t.Id is validated not null before passing to Contains()
+            teachers = teachers.Where(t => t.Id != null && !assignedIds.Contains(t.Id)).ToList();
+        }
+
+        return Ok(teachers);
+    }
+// ==========================================
+    // 5. DATABASE METRICS & STATS
+    // ==========================================
+
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetDbStatistics()
+    {
+        var coursesTask = _context.Courses.Find(Builders<Course>.Filter.Empty).ToListAsync();
+        var subjectsTask = _context.Subjects.Find(Builders<Subject>.Filter.Empty).ToListAsync();
+        var usersTask = _context.Users.Find(Builders<User>.Filter.Empty).ToListAsync();
+
+        await Task.WhenAll(coursesTask, subjectsTask, usersTask);
+
+        var allCourses = await coursesTask;
+        var allSubjects = await subjectsTask;
+        var allUsers = await usersTask;
+
+        var totalVersions = allCourses.Select(c => c.Version).Distinct().Count();
+        var totalCourses = allCourses.Count;
+        var totalSubjects = allSubjects.Count;
+
+        // Process Teacher stats
+        var teachers = allUsers.Where(u => u.Role == Role.Teacher).ToList();
+        var totalTeachers = teachers.Count;
+
+        var assignedTeacherIds = allSubjects
+            .Where(s => s.TeacherIds != null)
+            .SelectMany(s => s.TeacherIds)
+            .Distinct()
+            .ToList();
+
+        // Calculate unassigned teachers (CS8604 null safety resolved)
+        var unassignedTeachersCount = teachers.Count(t => t.Id != null && !assignedTeacherIds.Contains(t.Id));
+
+        var teacherLevels = new Dictionary<string, int>
+        {
+            { "Primary", teachers.Count(t => t.Levels != null && t.Levels.Contains("Primary")) },
+            { "Secondary", teachers.Count(t => t.Levels != null && t.Levels.Contains("Secondary")) },
+            { "Higher Secondary", teachers.Count(t => t.Levels != null && t.Levels.Contains("Higher Secondary")) }
+        };
+
+        // Process Student stats
+        var students = allUsers.Where(u => u.Role == Role.Student).ToList();
+        var totalStudents = students.Count;
+
+        // Calculate unassigned students
+        var unassignedStudentsCount = students.Count(s => string.IsNullOrEmpty(s.CourseId));
+
+        var courseMap = allCourses.ToDictionary(c => c.Id!, c => c);
+
+        var studentsByVersionAndClass = new Dictionary<string, Dictionary<string, int>>
+        {
+            { "BV", new Dictionary<string, int>() },
+            { "EV", new Dictionary<string, int>() }
+        };
+
+        foreach (var student in students)
+        {
+            if (string.IsNullOrEmpty(student.CourseId)) continue;
+
+            if (courseMap.TryGetValue(student.CourseId, out var course))
+            {
+                var versionKey = course.Version == "Bangla" ? "BV" : "EV";
+                var cleanCourseName = course.Name.Replace(" (BV)", "").Replace(" (EV)", "").Trim();
+
+                var targetDictionary = studentsByVersionAndClass[versionKey];
+                if (!targetDictionary.ContainsKey(cleanCourseName))
+                {
+                    targetDictionary[cleanCourseName] = 0;
+                }
+                targetDictionary[cleanCourseName]++;
+            }
+        }
+
+        var statistics = new
+        {
+            totalVersions,
+            totalSubjects,
+            totalCourses,
+            teachers = new
+            {
+                total = totalTeachers,
+                assigned = totalTeachers - unassignedTeachersCount,
+                unassigned = unassignedTeachersCount, // Count of teachers without subjects
+                byLevel = teacherLevels
+            },
+            students = new
+            {
+                total = totalStudents,
+                assigned = totalStudents - unassignedStudentsCount,
+                unassigned = unassignedStudentsCount, // Count of students without classes
+                byVersion = studentsByVersionAndClass
+            }
+        };
+
+        return Ok(statistics);
+    }
+    
 }

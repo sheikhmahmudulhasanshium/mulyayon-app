@@ -73,4 +73,24 @@ public class PublicController : ControllerBase
 
         return Ok(subjects);
     }
+    // GET: api/public/stats
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetPublicStats()
+    {
+        var totalCourses = await _context.Courses.CountDocumentsAsync(Builders<Course>.Filter.Empty);
+        var totalSubjects = await _context.Subjects.CountDocumentsAsync(Builders<Subject>.Filter.Empty);
+        
+        var totalTeachers = await _context.Users.CountDocumentsAsync(u => u.Role == Role.Teacher);
+        var totalStudents = await _context.Users.CountDocumentsAsync(u => u.Role == Role.Student);
+
+        var publicStats = new
+        {
+            totalStudents,
+            totalTeachers,
+            totalCourses,
+            totalSubjects
+        };
+
+        return Ok(publicStats);
+    }
 }
