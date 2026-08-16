@@ -33,19 +33,17 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 // 3. Configure Built-In IP-Based Rate Limiting (DDoS Mitigation)
 builder.Services.AddRateLimiter(options =>
 {
-    // Return HTTP 429 (Too Many Requests) when limits are exceeded
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-    // Apply rate limiting based on the client's IP address
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
             partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
             factory: partition => new FixedWindowRateLimiterOptions
             {
                 AutoReplenishment = true,
-                PermitLimit = 60, // Max 60 requests...
-                QueueLimit = 0,   // Reject immediately (don't queue up requests)
-                Window = TimeSpan.FromMinutes(1) // ...per 1 minute
+                PermitLimit = 60, 
+                QueueLimit = 0,   
+                Window = TimeSpan.FromMinutes(1) 
             }));
 });
 
@@ -119,16 +117,16 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
-if (app.Environment.IsDevelopment())
+// Swagger enabled for all environments (including production on Render)
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "School API v1");
+    options.RoutePrefix = string.Empty; // Serves the Swagger UI page directly at the root URL (/)
+});
 
 app.UseHttpsRedirection();
-
-app.UseStaticFiles(); // 1. Add this line here to enable static file serving (/wwwroot)
+app.UseStaticFiles(); 
 app.UseRateLimiter(); 
 
 app.UseAuthentication(); 
