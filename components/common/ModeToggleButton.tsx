@@ -1,8 +1,7 @@
-// components/common/ModeToggleButton.tsx
 "use client"
 
+import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-import { SunIcon, MoonIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,26 +16,29 @@ export function ModeToggle() {
 
   return (
     <DropdownMenu>
-      {/* 
-        Using 'render' prevents DropdownMenuTrigger from creating a nested <button>. 
-        It applies trigger actions directly to your custom Button component.
-      */}
       <DropdownMenuTrigger
         render={
           <Button variant="outline" size="icon">
-            <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+            <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+
+            <span className="sr-only">
+              Toggle theme
+            </span>
           </Button>
         }
       />
+
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
           Light
         </DropdownMenuItem>
+
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           Dark
         </DropdownMenuItem>
+
         <DropdownMenuItem onClick={() => setTheme("system")}>
           System
         </DropdownMenuItem>
