@@ -4,6 +4,8 @@ import * as React from "react"
 import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import LanguageToggleButton from "./buttons/LanguageToggleButton"
+import AuthButton from "./buttons/AuthButton"
+import { ModeToggle } from "./buttons/ModeToggleButton"
 
 interface SidebarProps {
   locale: "en" | "bn"
@@ -25,17 +27,18 @@ export default function Sidebar({ locale }: SidebarProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center justify-center h-9 w-9 border rounded-md bg-background hover:bg-accent text-foreground transition-colors shadow-sm outline-none shrink-0"
+        className="flex items-center justify-center h-9 w-9 border rounded-md bg-background hover:bg-accent text-foreground transition-colors shadow-sm outline-none shrink-0 cursor-pointer"
         aria-label="Open Menu"
       >
-        <Menu className="h-5 w-5" />
+        <Menu className="h-5 w-5 text-blue-900" />
       </button>
 
       {/* 2. Right: Full-width Placeholder Black Div (for buttons, searchbar, links, etc.) */}
-      <div className="flex-1 h-9 bg-muted  rounded-md flex items-center px-3 text-white text-xs">
+      <div className="flex-1 h-9 bg-black rounded-md flex items-center px-3 text-white text-xs">
         {/* Placeholder space */}
+        
       </div>
-
+      <ModeToggle />
       {/* 3. Semi-Transparent Backdrop Overlay */}
       <div
         className={cn(
@@ -54,13 +57,13 @@ export default function Sidebar({ locale }: SidebarProps) {
       >
         {/* Drawer Header with Close Button */}
         <div className="flex items-center justify-between border-b pb-4">
-          <span className="font-bold text-lg text-slate-900">
+          <span className="font-bold text-lg text-blue-900">
             {locale === "bn" ? "মেনু তালিকা" : "Navigation"}
           </span>
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="p-1.5 rounded-md hover:bg-accent text-muted-foreground transition-colors"
+            className="p-1.5 rounded-md hover:bg-accent text-muted-foreground transition-colors cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -80,16 +83,31 @@ export default function Sidebar({ locale }: SidebarProps) {
           ))}
         </nav>
 
-        {/* Preferences Area at bottom of Drawer */}
-        <div className="border-t pt-4 mt-auto flex flex-col gap-3">
+        {/* Unified Preferences Area at the bottom of the Drawer */}
+        <div className="border-t pt-4 mt-auto flex flex-col gap-4">
           <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {locale === "bn" ? "সেটিংস" : "Preferences"}
           </div>
+          
+          {/* Language Switch */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-700">
+            <span className="text-sm font-medium text-blue-700 dark:text-slate-300">
               {locale === "bn" ? "ভাষা পরিবর্তন" : "Language"}
             </span>
-            <LanguageToggleButton size="sm" />
+            <LanguageToggleButton size="xs" />
+          </div>
+
+          {/* Theme Switch */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-blue-700 dark:text-slate-300">
+              {locale === "bn" ? "থিম পরিবর্তন" : "Theme Mode"}
+            </span>
+            <ModeToggle />
+          </div>
+
+          {/* Authentication Button */}
+          <div className="pt-2 border-t mt-2 flex justify-center">
+            <AuthButton />
           </div>
         </div>
       </div>

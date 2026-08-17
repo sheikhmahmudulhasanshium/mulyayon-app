@@ -10,7 +10,7 @@ export async function generateMetadata({params}: {params: Promise<{ lang: string
   const locale = lang === "bn" ? "bn" : "en";
   const isBn = locale === "bn";
 
-  const title = isBn ? "মূল্যায়ন" : "Mulyayon";
+  const title = isBn ? "মূল্যায়ন অ্যাপ" : "Mulyayon App";
   const description = isBn ? "কাজ হোক প্রমাণ" : "Let Your Work Speak";
   const siteUrl = "https://mulyayon.vercel.app";
 

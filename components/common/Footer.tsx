@@ -20,6 +20,7 @@ export default function Footer({ locale }: FooterProps) {
             width={160} // Maintained exact 2:1 aspect ratio (scaled down from 1774x887)
             height={80} 
             className="object-contain"
+            priority
           />
           <p className="text-xs text-muted-foreground mt-1">
             {locale === "bn" 
