@@ -142,6 +142,7 @@ export function SignInForm({ locale }: SignInFormProps) {
             fill
             className="object-contain"
             priority
+            sizes="auto"
           />
         </div>
         <div>
