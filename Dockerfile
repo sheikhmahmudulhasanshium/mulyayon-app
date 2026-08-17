@@ -10,13 +10,15 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish -c Release -o /app/publish
 
-# 2. Use the runtime-only image to run the app (keeps the deployment lightweight)
+# 2. Use the runtime-only image to run the app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
+# Bypasses Linux kernel inotify limits by switching file monitoring to polling (Fixes Render startup crash)
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
+
 # Render dynamically injects a PORT environment variable (usually 10000). 
-# This tells ASP.NET Core to bind to that port.
 ENV ASPNETCORE_URLS=http://+:10000
 EXPOSE 10000
 
