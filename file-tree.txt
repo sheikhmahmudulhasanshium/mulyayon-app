@@ -1,14 +1,34 @@
-﻿Project Map for: \Job Apply\project\onno-rokom\frontend\onno-rokom-frontend
+﻿Project Map for: /Job Apply/project/onno-rokom/frontend/onno-rokom-frontend/
 
 🌳 Complete Project Tree (hiding major noise folders):
 onno-rokom-frontend/
 ├── 📁 app
-│   ├── 📁 [lang]
+│   ├── 📦[lang]
+    │   ┣ 📂(routes)
+    │   ┃ ┣ 📂(auth)
+        ┃ ┃ ┣ 📂sign-in
+        ┃ ┃ ┃ ┗ 📜page.tsx
+        ┃ ┃ ┗ 📂sign-out
+        ┃ ┃ ┃ ┗ 📜page.tsx
+        ┃ ┣ 📂admin
+        ┃ ┃ ┗ 📜page.tsx
+        ┃ ┣ 📂student
+        ┃ ┃ ┗ 📜page.tsx
+        ┃ ┗ 📂teacher
+        ┃ ┃ ┗ 📜page.tsx
+        ┣ 📜body.tsx
+        ┣ 📜layout.tsx
+        ┗ 📜page.tsx
 │   └── 📄 globals.css
 ├── 📁 components
 │   ├── 📁 common
-│   │   ├── 📄 LanguageToggleButton.tsx
-│   │   └── 📄 ModeToggleButton.tsx
+│   │   ├── 📁 buttons
+│   │   │   ├── 📄 LanguageToggleButton.tsx
+│   │   │   └── 📄 ModeToggleButton.tsx
+│   │   ├── 📄 Footer.tsx
+│   │   ├── 📄 Header.tsx
+│   │   ├── 📄 Navbar.tsx
+│   │   └── 📄 Sidebar.tsx
 │   ├── 📁 forms
 │   ├── 📁 modals
 │   └── 📁 ui
@@ -59,18 +79,3 @@ onno-rokom-frontend/
 ├── 📄 proxy.ts
 ├── 📄 README.md
 └── 📄 tsconfig.json
-
-
---- SCRIPT EXECUTION LOG ---
-[2026-08-17 03:37:22] [START] Script started. Awaiting user input for project path.
-[2026-08-17 03:38:05] [INPUT] User raw input for path: "F:\Job Apply\project\onno-rokom\frontend\onno-rokom-frontend"
-[2026-08-17 03:38:05] [PROCESS] Sanitized path: '\Job Apply\project\onno-rokom\frontend\onno-rokom-frontend'
-[2026-08-17 03:38:05] [SUCCESS] Path validation successful: '\Job Apply\project\onno-rokom\frontend\onno-rokom-frontend' is a valid directory.
-[2026-08-17 03:38:10] [INPUT] User selected map intensity: '3'
-[2026-08-17 03:38:12] [INPUT] User input for max depth: ''
-[2026-08-17 03:38:12] [CONFIG] Max depth for tree traversal set to: 99
-[2026-08-17 03:38:12] [PROCESS] Starting project map generation...
-[2026-08-17 03:38:12] [OUTPUT] Generated 'Tree' output successfully.
-[2026-08-17 03:38:29] [INPUT] User input for save filename: 'file-tree.txt'
-[2026-08-17 03:38:32] [INPUT] File exists. User asked to overwrite. Input: 'y'.
-[2026-08-17 03:38:32] [PROCESS] Preparing final output for saving to '\Job Apply\project\onno-rokom\frontend\onno-rokom-frontend\file-tree.txt'.

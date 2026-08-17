@@ -1,42 +1,31 @@
+// proxy.ts
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const locales = ["en", "bn"] as const
+const locales = ["en", "bn"]
 const defaultLocale = "en"
-
-type Locale = (typeof locales)[number]
-
-function getLocale(request: NextRequest): Locale {
-  const language = request.headers
-    .get("accept-language")
-    ?.split(",")[0]
-    ?.split("-")[0]
-
-  return language === "bn" ? "bn" : defaultLocale
-}
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  const hasLocale = locales.some(
-    (locale) =>
-      pathname === `/${locale}` ||
-      pathname.startsWith(`/${locale}/`)
+  const pathnameIsMissingLocale = locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   )
 
-  if (hasLocale) {
+  if (!pathnameIsMissingLocale) {
     return NextResponse.next()
   }
 
-  const locale = getLocale(request)
+  // Fallback to empty string if cookie is undefined to satisfy TypeScript types
+  const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value || ""
+  const locale = locales.includes(cookieLocale) ? cookieLocale : defaultLocale
 
-  return NextResponse.redirect(
-    new URL(`/${locale}${pathname}`, request.url)
-  )
+  request.nextUrl.pathname = `/${locale}${pathname}`
+  return NextResponse.redirect(request.nextUrl)
 }
 
 export const config = {
   matcher: [
-    "/((?!api|_next|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|webmanifest|xml|txt)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|favicon/|manifest.json|.*\\..*).*)",
   ],
 }
