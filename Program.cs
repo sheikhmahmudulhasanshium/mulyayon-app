@@ -76,7 +76,19 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Configure Swagger with Authorize locks
+// 1. Configure CORS (Correct top-level placement - outside of Swagger options block)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "https://mulyayon.vercel.app") // Local dev and production URL
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Allows cookies/tokens to pass safely
+    });
+});
+
+// 2. Configure Swagger with Authorize locks
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "School API", Version = "v1" });
@@ -128,6 +140,8 @@ app.UseSwaggerUI(options =>
 app.UseHttpsRedirection();
 app.UseStaticFiles(); 
 app.UseRateLimiter(); 
+
+app.UseCors("AllowFrontend"); // <-- Correctly placed middleware pipeline execution
 
 app.UseAuthentication(); 
 app.UseAuthorization();
