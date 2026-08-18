@@ -5,7 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Serilog;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace backend.Controllers;
 
@@ -47,9 +50,10 @@ public class AdminController : ControllerBase
     [HttpGet("courses")]
     public async Task<IActionResult> GetCourses()
     {
-        // Sort courses by Order ascending
-        var courses = await _context.Courses.Find(_ => true).SortBy(c => c.Order).ToListAsync();
-        return Ok(courses);
+        // Safe: Retrieve courses and sort them in-memory to handle legacy documents without 'Order'
+        var courses = await _context.Courses.Find(_ => true).ToListAsync();
+        var sortedCourses = courses.OrderBy(c => c.Order).ToList();
+        return Ok(sortedCourses);
     }
 
     [HttpPatch("courses/{id}")]
@@ -420,14 +424,14 @@ public class AdminController : ControllerBase
     [HttpGet("stats")]
     public async Task<IActionResult> GetDbStatistics()
     {
-        // Sort courses academically by Order ascending
-        var coursesTask = _context.Courses.Find(Builders<Course>.Filter.Empty).SortBy(c => c.Order).ToListAsync();
+        // Safe: Retrieve courses and sort in-memory to prevent legacy DB null-ordering exceptions
+        var coursesTask = _context.Courses.Find(Builders<Course>.Filter.Empty).ToListAsync();
         var subjectsTask = _context.Subjects.Find(Builders<Subject>.Filter.Empty).ToListAsync();
         var usersTask = _context.Users.Find(Builders<User>.Filter.Empty).ToListAsync();
 
         await Task.WhenAll(coursesTask, subjectsTask, usersTask);
 
-        var allCourses = await coursesTask;
+        var allCourses = (await coursesTask).OrderBy(c => c.Order).ToList();
         var allSubjects = await subjectsTask;
         var allUsers = await usersTask;
 
@@ -444,7 +448,6 @@ public class AdminController : ControllerBase
             .SelectMany(s => s.TeacherIds)
             .Distinct()
             .ToList();
-        // Calculate unassigned teachers (CS8604 null safety resolved)
 
         var unassignedTeachersCount = teachers.Count(t => t.Id != null && !assignedTeacherIds.Contains(t.Id));
 
@@ -458,7 +461,6 @@ public class AdminController : ControllerBase
         // Process Student stats
         var students = allUsers.Where(u => u.Role == Role.Student).ToList();
         var totalStudents = students.Count;
-        // Calculate unassigned students
 
         var unassignedStudentsCount = students.Count(s => string.IsNullOrEmpty(s.CourseId));
 
@@ -470,9 +472,11 @@ public class AdminController : ControllerBase
             { "EV", new Dictionary<string, int>() }
         };
 
-        // Pre-populate keys in academic order to guarantee order on JSON deserialization
+        // Pre-populate keys in exact academic order to guarantee correct JSON key sorting
         foreach (var course in allCourses)
         {
+            if (string.IsNullOrEmpty(course.Name)) continue;
+
             var versionKey = course.Version == "Bangla" ? "BV" : "EV";
             var cleanCourseName = course.Name.Replace(" (BV)", "").Replace(" (EV)", "").Trim();
 
@@ -483,17 +487,24 @@ public class AdminController : ControllerBase
             }
         }
 
-        // Populate student count values
+        // Populate student counts defensively
         foreach (var student in students)
         {
             if (string.IsNullOrEmpty(student.CourseId)) continue;
 
             if (courseMap.TryGetValue(student.CourseId, out var course))
             {
+                if (string.IsNullOrEmpty(course.Name)) continue;
+
                 var versionKey = course.Version == "Bangla" ? "BV" : "EV";
                 var cleanCourseName = course.Name.Replace(" (BV)", "").Replace(" (EV)", "").Trim();
 
-                studentsByVersionAndClass[versionKey][cleanCourseName]++;
+                var targetDictionary = studentsByVersionAndClass[versionKey];
+                if (!targetDictionary.ContainsKey(cleanCourseName))
+                {
+                    targetDictionary[cleanCourseName] = 0;
+                }
+                targetDictionary[cleanCourseName]++;
             }
         }
 

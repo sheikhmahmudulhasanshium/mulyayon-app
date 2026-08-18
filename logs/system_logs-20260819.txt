@@ -192,3 +192,21 @@ RolesAuthorizationRequirement:User.IsInRole must be true for one of the followin
 01:41:36-19-Aug-2026-----Executed endpoint 'backend.Controllers.AdminController.GetCourses (backend)'
 01:41:36-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Admin/courses - 200 null application/json; charset=utf-8 161.4577ms
 01:45:30-19-Aug-2026-----Application is shutting down...
+01:57:53-19-Aug-2026-----Demo Admin credentials verified.
+01:57:53-19-Aug-2026-----Loaded teachers successfully from teacher.json
+01:58:24-19-Aug-2026-----Teachers mapped to Subjects successfully.
+01:58:24-19-Aug-2026-----Loaded students successfully from student.json
+01:59:40-19-Aug-2026-----Successfully seeded 441 students.
+01:59:41-19-Aug-2026-----server-online-----id:system_kernel
+01:59:41-19-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+01:59:41-19-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+01:59:41-19-Aug-2026-----Now listening on: http://localhost:5000
+01:59:41-19-Aug-2026-----Application started. Press Ctrl+C to shut down.
+01:59:41-19-Aug-2026-----Hosting environment: Development
+01:59:41-19-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+01:59:42-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+01:59:42-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 168.4593ms
+01:59:42-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+01:59:42-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 1.7226ms
+01:59:42-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+01:59:42-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 131.7822ms
