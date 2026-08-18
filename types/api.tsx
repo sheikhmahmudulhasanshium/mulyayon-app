@@ -4,6 +4,7 @@ export interface Course {
   nameBn: string // Maps to [BsonElement("nameBn")]
   level: "Primary" | "Secondary" | string // Maps to [BsonElement("level")]
   version: "Bangla" | "English" | string // Maps to [BsonElement("version")]
+  order: number
 }
 
 export interface Subject {

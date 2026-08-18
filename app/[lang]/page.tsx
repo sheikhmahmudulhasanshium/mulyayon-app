@@ -1,61 +1,25 @@
 import PageProvider from "@/providers/page-provider";
-import Body from "./body";
+import Body from "./landing/body";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 import Sidebar from "@/components/common/Sidebar";
-
-export async function generateMetadata({params}: {params: Promise<{ lang: string }>}) {
+import { constructMetadata } from "@/components/common/metadata";
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const locale = lang === "bn" ? "bn" : "en";
-  const isBn = locale === "bn";
 
-  const title = isBn ? "মূল্যায়ন অ্যাপ" : "Mulyayon App";
-  const description = isBn ? "কাজ হোক প্রমাণ" : "Let Your Work Speak";
-  const siteUrl = "https://mulyayon.vercel.app";
-
-  return {
-    metadataBase: new URL(siteUrl),
-    title,
-    description,
-    icons: {
-      icon: [
-        {
-          url: "/favicon/favicon-16x16.png",
-          sizes: "16x16",
-          type: "image/png",
-        },
-        {
-          url: "/favicon/favicon-32x32.png",
-          sizes: "32x32",
-          type: "image/png",
-        },
-        {
-          url: "/favicon/favicon.ico",
-          sizes: "any",
-        },
-      ],
-      apple: [
-        {
-          url: "/favicon/apple-touch-icon.png",
-          sizes: "180x180",
-          type: "image/png",
-        },
-      ],
-    },
-    manifest: "/favicon/site.webmanifest",
-    openGraph: {
-      title,
-      description,
-      url: `${siteUrl}/${locale}`,
-    },
-  };
+  return constructMetadata({
+    title: { bn: "মূল্যায়ন অ্যাপ", en: "Mulyayon App" },
+    description: { bn: "কাজ হোক প্রমাণ", en: "Let Your Work Speak" },
+    path: "",
+    locale,
+  });
 }
 
-
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
-  const { lang } = await params
-  const locale = lang === "bn" ? "bn" : "en"     
+  const { lang } = await params;
+  const locale = lang === "bn" ? "bn" : "en";     
 
   return (
     <PageProvider 
@@ -66,5 +30,5 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     >
       <Body locale={locale} />
     </PageProvider>
-  )
+  );
 }

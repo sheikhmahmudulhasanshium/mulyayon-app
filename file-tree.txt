@@ -1,35 +1,23 @@
-﻿Project Map for: /Job Apply/project/onno-rokom/frontend/onno-rokom-frontend/
+﻿Project Map for: \Job Apply\project\onno-rokom\frontend\onno-rokom-frontend
 
 🌳 Complete Project Tree (hiding major noise folders):
 onno-rokom-frontend/
 ├── 📁 app
-│   ├── 📦[lang]
-    │   ┣ 📂(routes)
-    │   ┃ ┣ 📂(auth)
-        ┃ ┃ ┣ 📂sign-in
-        ┃ ┃ ┃ ┗ 📜page.tsx
-        ┃ ┃ ┗ 📂sign-out
-        ┃ ┃ ┃ ┗ 📜page.tsx
-        ┃ ┣ 📂admin
-        ┃ ┃ ┗ 📜page.tsx
-        ┃ ┣ 📂student
-        ┃ ┃ ┗ 📜page.tsx
-        ┃ ┗ 📂teacher
-        ┃ ┃ ┗ 📜page.tsx
-        ┣ 📜body.tsx
-        ┣ 📜layout.tsx
-        ┗ 📜page.tsx
+│   ├── 📁 [lang]
 │   └── 📄 globals.css
 ├── 📁 components
 │   ├── 📁 common
 │   │   ├── 📁 buttons
+│   │   │   ├── 📄 AuthButton.tsx
 │   │   │   ├── 📄 LanguageToggleButton.tsx
 │   │   │   └── 📄 ModeToggleButton.tsx
 │   │   ├── 📄 Footer.tsx
 │   │   ├── 📄 Header.tsx
 │   │   ├── 📄 Navbar.tsx
-│   │   └── 📄 Sidebar.tsx
+│   │   ├── 📄 Sidebar.tsx
+│   │   └── 📄 SystemHealthIndicator.tsx
 │   ├── 📁 forms
+│   │   └── 📄 sign-in-form.tsx
 │   ├── 📁 modals
 │   └── 📁 ui
 │       ├── 📄 accordion.tsx
@@ -37,13 +25,32 @@ onno-rokom-frontend/
 │       ├── 📄 button.tsx
 │       ├── 📄 card.tsx
 │       ├── 📄 dropdown-menu.tsx
+│       ├── 📄 form.tsx
 │       ├── 📄 input.tsx
+│       ├── 📄 label.tsx
 │       ├── 📄 select.tsx
 │       └── 📄 separator.tsx
 ├── 📁 hooks
+│   ├── 📁 admin
+│   │   ├── 📄 use-courses.ts
+│   │   ├── 📄 use-stats.ts
+│   │   ├── 📄 use-subjects.ts
+│   │   ├── 📄 use-teachers.ts
+│   │   └── 📄 use-users.ts
+│   ├── 📁 common
+│   │   ├── 📄 use-assignments.ts
+│   │   ├── 📄 use-health.ts
+│   │   ├── 📄 use-public.ts
+│   │   ├── 📄 use-submissions.ts
+│   │   └── 📄 use-upload.ts
+│   └── 📁 teacher
+│       ├── 📄 use-teacher-stats.ts
+│       └── 📄 use-teacher-students.ts
 ├── 📁 lib
+│   ├── 📄 api.ts
 │   └── 📄 utils.ts
 ├── 📁 providers
+│   ├── 📄 auth-provider.tsx
 │   ├── 📄 language-provider.tsx
 │   ├── 📄 page-provider.tsx
 │   └── 📄 theme-provider.tsx
@@ -63,6 +70,8 @@ onno-rokom-frontend/
 │       ├── 📄 logo-bn.svg
 │       ├── 📄 logo-en.png
 │       └── 📄 logo-en.svg
+├── 📁 types
+│   └── 📄 api.tsx
 ├── 📄 .env
 ├── 📄 .gitignore
 ├── 📄 AGENTS.md
@@ -79,3 +88,4 @@ onno-rokom-frontend/
 ├── 📄 proxy.ts
 ├── 📄 README.md
 └── 📄 tsconfig.json
+

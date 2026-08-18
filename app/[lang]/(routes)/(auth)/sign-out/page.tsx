@@ -1,27 +1,26 @@
-import PageProvider from "@/providers/page-provider"
-import Header from "@/components/common/Header"
-import Footer from "@/components/common/Footer"
-import Navbar from "@/components/common/Navbar"
-import Sidebar from "@/components/common/Sidebar"
-import Body from "./body"
+import PageProvider from "@/providers/page-provider";
+import Header from "@/components/common/Header";
+import Footer from "@/components/common/Footer";
+import Navbar from "@/components/common/Navbar";
+import Sidebar from "@/components/common/Sidebar";
+import Body from "./body";
+import { constructMetadata } from "@/components/common/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
-  const { lang } = await params
-  const locale = lang === "bn" ? "bn" : "en"
-  const isBn = locale === "bn"
+  const { lang } = await params;
+  const locale = lang === "bn" ? "bn" : "en";
 
-  const title = isBn ? "সাইন আউট | মূল্যায়ন অ্যাপ" : "Sign Out - Mulyayon App"
-  const description = isBn ? "সিস্টেম থেকে সাইন আউট করা হচ্ছে" : "Signing out of Mulyayon"
-  
-  return {
-    title,
-    description,
-  }
+  return constructMetadata({
+    title: { bn: "সাইন আউট | মূল্যায়ন অ্যাপ", en: "Sign Out | Mulyayon App" },
+    description: { bn: "সিস্টেম থেকে সাইন আউট করা হচ্ছে", en: "Signing out of Mulyayon" },
+    path: "/sign-out",
+    locale,
+  });
 }
 
 export default async function SignOutPage({ params }: { params: Promise<{ lang: string }> }) {
-  const { lang } = await params
-  const locale = lang === "bn" ? "bn" : "en"
+  const { lang } = await params;
+  const locale = lang === "bn" ? "bn" : "en";
 
   return (
     <PageProvider 
@@ -32,5 +31,5 @@ export default async function SignOutPage({ params }: { params: Promise<{ lang: 
     >    
       <Body locale={locale} />
     </PageProvider>
-  )
+  );
 }

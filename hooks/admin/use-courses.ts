@@ -4,6 +4,11 @@ import * as React from "react"
 import { apiClient } from "@/lib/api"
 import { Course } from "@/types/api"
 
+// Helper utility to safely sort courses by their order property
+const sortCourses = (list: Course[]): Course[] => {
+  return [...list].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+}
+
 export function useCourses() {
   const [courses, setCourses] = React.useState<Course[]>([])
   const [loading, setLoading] = React.useState(false)
@@ -14,7 +19,8 @@ export function useCourses() {
     setError(null)
     try {
       const data = await apiClient("admin/courses", { method: "GET" })
-      setCourses(data)
+      // Server-side sorted, but keeping a client-side sort as a fallback defense
+      setCourses(sortCourses(data))
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load courses")
     } finally {
@@ -29,7 +35,8 @@ export function useCourses() {
         method: "POST",
         body: { name },
       })
-      setCourses((prev) => [...prev, newCourse])
+      // Automatically sorts the list locally after adding
+      setCourses((prev) => sortCourses([...prev, newCourse]))
       return newCourse
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to create course"
@@ -46,7 +53,7 @@ export function useCourses() {
         body: { name },
       })
       setCourses((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, name } : c))
+        sortCourses(prev.map((c) => (c.id === id ? { ...c, name } : c)))
       )
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to update course"
@@ -70,7 +77,6 @@ export function useCourses() {
   React.useEffect(() => {
     let isMounted = true
 
-    // Defer the synchronous state update out of the render loop
     const timer = setTimeout(() => {
       if (isMounted) {
         fetchCourses()
