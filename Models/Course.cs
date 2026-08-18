@@ -20,5 +20,7 @@ public class Course
     public string Level { get; set; } = string.Empty; // "Primary" (1-5) or "Secondary" (6-10)
         [BsonElement("version")]
     public string Version { get; set; } = string.Empty; // "Bangla" (BV) or "English" (EV)
+     public int Order { get; set; } 
+
 
 }

@@ -79,6 +79,8 @@ public static class DbSeeder
             };
 
             var coursesToSeed = new List<Course>();
+            int orderIndex = 1; // Keep track of academic progression
+
             foreach (var bc in baseCourses)
             {
                 coursesToSeed.Add(new Course
@@ -86,7 +88,8 @@ public static class DbSeeder
                     Name = $"{bc.Name} (BV)",
                     NameBn = $"{bc.NameBn} (বাংলা সংস্করণ)",
                     Level = bc.Level,
-                    Version = "Bangla"
+                    Version = "Bangla",
+                    Order = orderIndex
                 });
 
                 coursesToSeed.Add(new Course
@@ -94,8 +97,10 @@ public static class DbSeeder
                     Name = $"{bc.Name} (EV)",
                     NameBn = $"{bc.NameBn} (ইংরেজি সংস্করণ)",
                     Level = bc.Level,
-                    Version = "English"
+                    Version = "English",
+                    Order =orderIndex
                 });
+                orderIndex++;
             }
             await context.Courses.InsertManyAsync(coursesToSeed);
         }

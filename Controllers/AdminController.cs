@@ -5,10 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace backend.Controllers;
 
@@ -50,7 +47,8 @@ public class AdminController : ControllerBase
     [HttpGet("courses")]
     public async Task<IActionResult> GetCourses()
     {
-        var courses = await _context.Courses.Find(_ => true).ToListAsync();
+        // Sort courses by Order ascending
+        var courses = await _context.Courses.Find(_ => true).SortBy(c => c.Order).ToListAsync();
         return Ok(courses);
     }
 
@@ -358,7 +356,6 @@ public class AdminController : ControllerBase
             .Distinct()
             .ToList();
 
-        // Warning CS8604 fixed: u.Id is validated not null before passing to Contains()
         var unassignedTeachers = await _context.Users
             .Find(u => u.Role == Role.Teacher && u.Id != null && !assignedTeacherIds.Contains(u.Id))
             .ToListAsync();
@@ -410,20 +407,21 @@ public class AdminController : ControllerBase
                 .Distinct()
                 .ToList();
 
-            // Warning CS8604 fixed: t.Id is validated not null before passing to Contains()
             teachers = teachers.Where(t => t.Id != null && !assignedIds.Contains(t.Id)).ToList();
         }
 
         return Ok(teachers);
     }
-// ==========================================
+
+    // ==========================================
     // 5. DATABASE METRICS & STATS
     // ==========================================
 
     [HttpGet("stats")]
     public async Task<IActionResult> GetDbStatistics()
     {
-        var coursesTask = _context.Courses.Find(Builders<Course>.Filter.Empty).ToListAsync();
+        // Sort courses academically by Order ascending
+        var coursesTask = _context.Courses.Find(Builders<Course>.Filter.Empty).SortBy(c => c.Order).ToListAsync();
         var subjectsTask = _context.Subjects.Find(Builders<Subject>.Filter.Empty).ToListAsync();
         var usersTask = _context.Users.Find(Builders<User>.Filter.Empty).ToListAsync();
 
@@ -446,8 +444,8 @@ public class AdminController : ControllerBase
             .SelectMany(s => s.TeacherIds)
             .Distinct()
             .ToList();
-
         // Calculate unassigned teachers (CS8604 null safety resolved)
+
         var unassignedTeachersCount = teachers.Count(t => t.Id != null && !assignedTeacherIds.Contains(t.Id));
 
         var teacherLevels = new Dictionary<string, int>
@@ -460,8 +458,8 @@ public class AdminController : ControllerBase
         // Process Student stats
         var students = allUsers.Where(u => u.Role == Role.Student).ToList();
         var totalStudents = students.Count;
-
         // Calculate unassigned students
+
         var unassignedStudentsCount = students.Count(s => string.IsNullOrEmpty(s.CourseId));
 
         var courseMap = allCourses.ToDictionary(c => c.Id!, c => c);
@@ -472,6 +470,20 @@ public class AdminController : ControllerBase
             { "EV", new Dictionary<string, int>() }
         };
 
+        // Pre-populate keys in academic order to guarantee order on JSON deserialization
+        foreach (var course in allCourses)
+        {
+            var versionKey = course.Version == "Bangla" ? "BV" : "EV";
+            var cleanCourseName = course.Name.Replace(" (BV)", "").Replace(" (EV)", "").Trim();
+
+            var targetDictionary = studentsByVersionAndClass[versionKey];
+            if (!targetDictionary.ContainsKey(cleanCourseName))
+            {
+                targetDictionary[cleanCourseName] = 0;
+            }
+        }
+
+        // Populate student count values
         foreach (var student in students)
         {
             if (string.IsNullOrEmpty(student.CourseId)) continue;
@@ -481,12 +493,7 @@ public class AdminController : ControllerBase
                 var versionKey = course.Version == "Bangla" ? "BV" : "EV";
                 var cleanCourseName = course.Name.Replace(" (BV)", "").Replace(" (EV)", "").Trim();
 
-                var targetDictionary = studentsByVersionAndClass[versionKey];
-                if (!targetDictionary.ContainsKey(cleanCourseName))
-                {
-                    targetDictionary[cleanCourseName] = 0;
-                }
-                targetDictionary[cleanCourseName]++;
+                studentsByVersionAndClass[versionKey][cleanCourseName]++;
             }
         }
 
@@ -499,19 +506,18 @@ public class AdminController : ControllerBase
             {
                 total = totalTeachers,
                 assigned = totalTeachers - unassignedTeachersCount,
-                unassigned = unassignedTeachersCount, // Count of teachers without subjects
+                unassigned = unassignedTeachersCount,
                 byLevel = teacherLevels
             },
             students = new
             {
                 total = totalStudents,
                 assigned = totalStudents - unassignedStudentsCount,
-                unassigned = unassignedStudentsCount, // Count of students without classes
+                unassigned = unassignedStudentsCount,
                 byVersion = studentsByVersionAndClass
             }
         };
 
         return Ok(statistics);
     }
-    
 }
