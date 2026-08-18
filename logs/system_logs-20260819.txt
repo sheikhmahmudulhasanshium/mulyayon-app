@@ -1,0 +1,20 @@
+01:08:29-19-Aug-2026-----Loaded teachers successfully from teacher.json
+01:09:00-19-Aug-2026-----Teachers mapped to Subjects successfully.
+01:09:00-19-Aug-2026-----Loaded students successfully from student.json
+01:10:14-19-Aug-2026-----Successfully seeded 441 students.
+01:10:14-19-Aug-2026-----server-online-----id:system_kernel
+01:10:14-19-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+01:10:14-19-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+01:10:14-19-Aug-2026-----Now listening on: http://localhost:5000
+01:10:14-19-Aug-2026-----Application started. Press Ctrl+C to shut down.
+01:10:14-19-Aug-2026-----Hosting environment: Development
+01:10:14-19-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+01:10:15-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger - null null
+01:10:15-19-Aug-2026-----Failed to determine the https port for redirect.
+01:10:19-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger - 404 0 null 3706.2338ms
+01:10:19-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger, Response status code: 404
+01:13:34-19-Aug-2026-----Application is shutting down...
+01:13:52-19-Aug-2026-----Demo Admin credentials verified.
+01:13:53-19-Aug-2026-----Loaded teachers successfully from teacher.json
+01:14:22-19-Aug-2026-----Teachers mapped to Subjects successfully.
+01:14:22-19-Aug-2026-----Loaded students successfully from student.json
