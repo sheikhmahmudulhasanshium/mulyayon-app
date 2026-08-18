@@ -57,8 +57,13 @@ public static class DbSeeder
                 ("Class 6", "ষষ্ঠ শ্রেণী", "Secondary"),
                 ("Class 7", "সপ্তম শ্রেণী", "Secondary"),
                 ("Class 8", "অষ্টম শ্রেণী", "Secondary"),
-                ("Class 9", "নবম শ্রেণী", "Secondary"),
                 
+                // Class 9 Split into Groups
+                ("Class 9 (Science)", "নবম শ্রেণী (বিজ্ঞান)", "Secondary"),
+                ("Class 9 (Business Studies)", "নবম শ্রেণী (ব্যবসায় শিক্ষা)", "Secondary"),
+                ("Class 9 (Humanities)", "নবম শ্রেণী (মানবিক)", "Secondary"),
+                
+                // Class 10 Groups
                 ("Class 10 (Science - New)", "দশম শ্রেণী (বিজ্ঞান - নতুন)", "Secondary"),
                 ("Class 10 (Science - Candidate)", "দশম শ্রেণী (বিজ্ঞান - পরীক্ষার্থী)", "Secondary"),
                 ("Class 10 (Business Studies - New)", "দশম শ্রেণী (ব্যবসায় শিক্ষা - নতুন)", "Secondary"),
@@ -194,52 +199,48 @@ public static class DbSeeder
                     AddSubject($"{baseName} ICT" + langSuffix);
                     AddSubject($"{baseName} Religion" + langSuffix);
                 }
-                else if (course.Name.Contains("Class 9"))
+                // Class 9 & Class 10 Science Groups
+                else if (course.Name.Contains("Science") && (course.Name.Contains("Class 9") || course.Name.Contains("Class 10")))
                 {
-                    AddSubject("Class 9 Bangla 1st Paper" + langSuffix);
-                    AddSubject("Class 9 Bangla 2nd Paper" + langSuffix);
-                    AddSubject("Class 9 English 1st Paper" + langSuffix);
-                    AddSubject("Class 9 English 2nd Paper" + langSuffix);
-                    AddSubject("Class 9 Mathematics" + langSuffix);
-                    AddSubject("Class 9 ICT" + langSuffix);
-                    AddSubject("Class 9 General Science" + langSuffix);
+                    var prefix = course.Name.Contains("Class 9") ? "Class 9" : "Class 10";
+                    AddSubject($"{prefix} Bangla 1st Paper" + langSuffix);
+                    AddSubject($"{prefix} Bangla 2nd Paper" + langSuffix);
+                    AddSubject($"{prefix} English 1st Paper" + langSuffix);
+                    AddSubject($"{prefix} English 2nd Paper" + langSuffix);
+                    AddSubject($"{prefix} Mathematics" + langSuffix);
+                    AddSubject($"{prefix} ICT" + langSuffix);
+                    AddSubject($"{prefix} Physics" + langSuffix);
+                    AddSubject($"{prefix} Chemistry" + langSuffix);
+                    AddSubject($"{prefix} Biology" + langSuffix);
+                    AddSubject($"{prefix} Higher Mathematics" + langSuffix);
                 }
-                else if (course.Name.Contains("Class 10 (Science"))
+                // Class 9 & Class 10 Business Studies Groups
+                else if (course.Name.Contains("Business") && (course.Name.Contains("Class 9") || course.Name.Contains("Class 10")))
                 {
-                    AddSubject("Class 10 Bangla 1st Paper" + langSuffix);
-                    AddSubject("Class 10 Bangla 2nd Paper" + langSuffix);
-                    AddSubject("Class 10 English 1st Paper" + langSuffix);
-                    AddSubject("Class 10 English 2nd Paper" + langSuffix);
-                    AddSubject("Class 10 Mathematics" + langSuffix);
-                    AddSubject("Class 10 ICT" + langSuffix);
-                    AddSubject("Class 10 Physics" + langSuffix);
-                    AddSubject("Class 10 Chemistry" + langSuffix);
-                    AddSubject("Class 10 Biology" + langSuffix);
-                    AddSubject("Class 10 Higher Mathematics" + langSuffix);
+                    var prefix = course.Name.Contains("Class 9") ? "Class 9" : "Class 10";
+                    AddSubject($"{prefix} Bangla 1st Paper" + langSuffix);
+                    AddSubject($"{prefix} Bangla 2nd Paper" + langSuffix);
+                    AddSubject($"{prefix} English 1st Paper" + langSuffix);
+                    AddSubject($"{prefix} English 2nd Paper" + langSuffix);
+                    AddSubject($"{prefix} Mathematics" + langSuffix);
+                    AddSubject($"{prefix} ICT" + langSuffix);
+                    AddSubject($"{prefix} Accounting" + langSuffix);
+                    AddSubject($"{prefix} Finance & Banking" + langSuffix);
+                    AddSubject($"{prefix} Business Entrepreneurship" + langSuffix);
                 }
-                else if (course.Name.Contains("Class 10 (Business"))
+                // Class 9 & Class 10 Humanities Groups
+                else if (course.Name.Contains("Humanities") && (course.Name.Contains("Class 9") || course.Name.Contains("Class 10")))
                 {
-                    AddSubject("Class 10 Bangla 1st Paper" + langSuffix);
-                    AddSubject("Class 10 Bangla 2nd Paper" + langSuffix);
-                    AddSubject("Class 10 English 1st Paper" + langSuffix);
-                    AddSubject("Class 10 English 2nd Paper" + langSuffix);
-                    AddSubject("Class 10 Mathematics" + langSuffix);
-                    AddSubject("Class 10 ICT" + langSuffix);
-                    AddSubject("Class 10 Accounting" + langSuffix);
-                    AddSubject("Class 10 Finance & Banking" + langSuffix);
-                    AddSubject("Class 10 Business Entrepreneurship" + langSuffix);
-                }
-                else if (course.Name.Contains("Class 10 (Humanities"))
-                {
-                    AddSubject("Class 10 Bangla 1st Paper" + langSuffix);
-                    AddSubject("Class 10 Bangla 2nd Paper" + langSuffix);
-                    AddSubject("Class 10 English 1st Paper" + langSuffix);
-                    AddSubject("Class 10 English 2nd Paper" + langSuffix);
-                    AddSubject("Class 10 Mathematics" + langSuffix);
-                    AddSubject("Class 10 ICT" + langSuffix);
-                    AddSubject("Class 10 History of Bangladesh & World Civilization" + langSuffix);
-                    AddSubject("Class 10 Geography & Environment" + langSuffix);
-                    AddSubject("Class 10 Civics & Citizenship" + langSuffix);
+                    var prefix = course.Name.Contains("Class 9") ? "Class 9" : "Class 10";
+                    AddSubject($"{prefix} Bangla 1st Paper" + langSuffix);
+                    AddSubject($"{prefix} Bangla 2nd Paper" + langSuffix);
+                    AddSubject($"{prefix} English 1st Paper" + langSuffix);
+                    AddSubject($"{prefix} English 2nd Paper" + langSuffix);
+                    AddSubject($"{prefix} Mathematics" + langSuffix);
+                    AddSubject($"{prefix} ICT" + langSuffix);
+                    AddSubject($"{prefix} History of Bangladesh & World Civilization" + langSuffix);
+                    AddSubject($"{prefix} Geography & Environment" + langSuffix);
+                    AddSubject($"{prefix} Civics & Citizenship" + langSuffix);
                 }
                 else if (course.Level == "Higher Secondary")
                 {
@@ -324,25 +325,23 @@ public static class DbSeeder
                 }
             }
 
-            // Fallback generation of 50 teachers if teacher.json is missing or corrupt
             if (teacherDtos == null)
             {
                 Log.Warning("teacher.json not found or corrupt. Generating 50 Marvel Teachers programmatically...");
                 teacherDtos = GenerateFallbackTeachers();
             }
 
-var teachersToInsert = teacherDtos.Select(dto => new User
+            var teachersToInsert = teacherDtos.Select(dto => new User
             {
                 Name = dto.Name,
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Teacher@123"),
                 Role = "Teacher",
-                // Map the fields here so they write to the database:
                 Specialties = dto.Specialties,
                 Versions = dto.Versions,
                 Levels = dto.Levels
             }).ToList();
-            // Inject Demo Teacher Credentials
+
             var demoTeacherExists = await context.Users.CountDocumentsAsync(u => u.Email == "teacher@school.com") > 0;
             if (!demoTeacherExists)
             {
@@ -426,7 +425,6 @@ var teachersToInsert = teacherDtos.Select(dto => new User
                 }
             }
 
-            // Fallback generation of 400 students if student.json is missing or corrupt
             if (studentDtos == null)
             {
                 Log.Warning("student.json not found or corrupt. Generating 400 Marvel Students programmatically...");
@@ -436,7 +434,6 @@ var teachersToInsert = teacherDtos.Select(dto => new User
             var studentsToInsert = new List<User>();
             var rand = new Random();
 
-            // Inject Demo Student Credentials
             var demoStudentExists = await context.Users.CountDocumentsAsync(u => u.Email == "student@school.com") > 0;
             if (!demoStudentExists)
             {
@@ -503,7 +500,6 @@ var teachersToInsert = teacherDtos.Select(dto => new User
         }
     }
 
-    // Programmatic Fallback Generator for 50 Teachers
     private static List<TeacherSeedDto> GenerateFallbackTeachers()
     {
         var specialties = new List<string> { "Bangla", "English", "Mathematics", "Science", "Physics", "Chemistry", "Biology", "ICT", "Accounting", "Geography", "History" };
@@ -538,7 +534,6 @@ var teachersToInsert = teacherDtos.Select(dto => new User
         return generated;
     }
 
-    // Programmatic Fallback Generator for 400 Students
     private static List<StudentSeedDto> GenerateFallbackStudents(List<Course> courses)
     {
         var firstNames = new[] { "Peter", "Gwen", "Miles", "Ned", "Harry", "Flash", "Mary", "Liz", "Betty", "Anya", "Kamala", "Bobby", "Kitty", "Jubilee", "Rogue", "Remy", "Piotr", "Illyana", "Sam", "Roberto", "Scott", "Jean", "Warren", "Hank", "Alex", "Lorna", "Billy", "Tommy", "Teddy", "David", "America", "Cassie", "Kate", "Eli", "Noh", "Laura", "Gabby", "Quentin", "Glob", "Hisako" };
@@ -548,7 +543,6 @@ var teachersToInsert = teacherDtos.Select(dto => new User
         var rand = new Random();
         int emailIdCounter = 1;
 
-        // Ensure 10 students are generated for every course
         foreach (var course in courses)
         {
             for (int i = 0; i < 10; i++)
