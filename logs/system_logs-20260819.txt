@@ -18,3 +18,119 @@
 01:13:53-19-Aug-2026-----Loaded teachers successfully from teacher.json
 01:14:22-19-Aug-2026-----Teachers mapped to Subjects successfully.
 01:14:22-19-Aug-2026-----Loaded students successfully from student.json
+01:15:33-19-Aug-2026-----Successfully seeded 441 students.
+01:15:33-19-Aug-2026-----server-online-----id:system_kernel
+01:15:33-19-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+01:15:33-19-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+01:15:33-19-Aug-2026-----Now listening on: http://localhost:5000
+01:15:33-19-Aug-2026-----Application started. Press Ctrl+C to shut down.
+01:15:33-19-Aug-2026-----Hosting environment: Development
+01:15:33-19-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+01:15:33-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger - null null
+01:15:33-19-Aug-2026-----Failed to determine the https port for redirect.
+01:15:33-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger - 404 0 null 80.9903ms
+01:15:33-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger, Response status code: 404
+01:15:49-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger - null null
+01:15:49-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger - 404 0 null 4.3068ms
+01:15:49-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger, Response status code: 404
+01:15:59-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:15:59-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 6.4973ms
+01:15:59-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:16:02-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:16:02-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 1.1831ms
+01:16:02-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:16:03-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:16:03-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.5975ms
+01:16:03-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:16:03-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:16:03-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 1.8425ms
+01:16:03-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:16:03-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:16:03-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 3.684ms
+01:16:03-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:16:04-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:16:04-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.6404ms
+01:16:04-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:16:33-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:16:33-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 5.6662ms
+01:16:33-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:13-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:13-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.9921ms
+01:21:13-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:26-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:26-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.8351ms
+01:21:26-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:27-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:27-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.5456ms
+01:21:27-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:34-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:34-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.7024ms
+01:21:34-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:38-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:38-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 1.2502ms
+01:21:38-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:39-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:39-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.6293ms
+01:21:39-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:39-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:39-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.8109ms
+01:21:39-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:40-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:40-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 1.2617ms
+01:21:40-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:21:40-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:21:40-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 0.6753ms
+01:21:40-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:22:51-19-Aug-2026-----Application is shutting down...
+01:23:12-19-Aug-2026-----server-online-----id:system_kernel
+01:23:12-19-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+01:23:13-19-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+01:23:13-19-Aug-2026-----Now listening on: http://localhost:5000
+01:23:13-19-Aug-2026-----Application started. Press Ctrl+C to shut down.
+01:23:13-19-Aug-2026-----Hosting environment: Development
+01:23:13-19-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+01:23:13-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger - null null
+01:23:13-19-Aug-2026-----Failed to determine the https port for redirect.
+01:23:13-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger - 404 0 null 86.5291ms
+01:23:13-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger, Response status code: 404
+01:23:44-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/index.html - null null
+01:23:44-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/index.html - 404 0 null 7.5434ms
+01:23:44-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/swagger/index.html, Response status code: 404
+01:24:26-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000//index.html - null null
+01:24:27-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000//index.html - 200 null text/html;charset=utf-8 422.5235ms
+01:24:27-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000//swagger-ui.css - null null
+01:24:27-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000//swagger-ui-bundle.js - null null
+01:24:27-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000//swagger-ui-standalone-preset.js - null null
+01:24:27-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000//swagger-ui-standalone-preset.js - 404 0 null 1.7731ms
+01:24:27-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000//swagger-ui.css - 404 0 null 3.5086ms
+01:24:27-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000//swagger-ui-bundle.js - 404 0 null 1.8366ms
+01:24:27-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000//swagger-ui.css, Response status code: 404
+01:24:27-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000//swagger-ui-bundle.js, Response status code: 404
+01:24:27-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000//swagger-ui-standalone-preset.js, Response status code: 404
+01:24:27-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+01:24:27-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 4.56ms
+01:24:27-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000//favicon-32x32.png - null null
+01:24:27-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000//favicon-32x32.png - 404 0 null 1.1862ms
+01:24:27-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000//favicon-32x32.png, Response status code: 404
+01:24:27-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000//favicon-16x16.png - null null
+01:24:27-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000//favicon-16x16.png - 404 0 null 1.2816ms
+01:24:27-19-Aug-2026-----Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000//favicon-16x16.png, Response status code: 404
+01:24:35-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+01:24:35-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 0.9379ms
+01:24:35-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger-ui.css - null null
+01:24:35-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger-ui-bundle.js - null null
+01:24:35-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+01:24:35-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger-ui-standalone-preset.js - null null
+01:24:35-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 1.0664ms
+01:24:35-19-Aug-2026-----Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+01:24:35-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger-ui.css - 200 152034 text/css 187.4403ms
+01:24:35-19-Aug-2026-----Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+01:24:35-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger-ui-standalone-preset.js - 200 230280 text/javascript 196.3864ms
+01:24:35-19-Aug-2026-----Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+01:24:35-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger-ui-bundle.js - 200 1456926 text/javascript 255.5007ms
+01:24:35-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+01:24:35-19-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/favicon-32x32.png - null null
+01:24:35-19-Aug-2026-----Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+01:24:35-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/favicon-32x32.png - 200 628 image/png 0.5468ms
+01:24:36-19-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 170.4424ms
+01:30:15-19-Aug-2026-----Application is shutting down...
