@@ -1,9 +1,9 @@
 export interface Course {
   id: string
   name: string
-  nameBn: string // Maps to [BsonElement("nameBn")]
-  level: "Primary" | "Secondary" | string // Maps to [BsonElement("level")]
-  version: "Bangla" | "English" | string // Maps to [BsonElement("version")]
+  nameBn?: string | null     // Marked optional/nullable for newly created courses
+  level?: "Primary" | "Secondary" | string | null 
+  version?: "Bangla" | "English" | string | null 
   order: number
 }
 
@@ -24,6 +24,36 @@ export interface User {
   specialties?: string[]
   versions?: string[]
   levels?: string[]
+}
+
+// Helper types for Paginated Responses
+export interface PaginatedResult<T> {
+  data: T[]
+  totalCount: number
+  page: number
+  totalPage: number
+}
+
+export interface PaginatedCoursesResult {
+  data: (Course & { studentCount: number })[]
+  page: number
+  totalPage: number
+  totalVersionCourse: number
+  totalCourse: number
+}
+
+export interface PaginatedSubjectsResult {
+  data: {
+    id: string
+    name: string
+    nameBn: string
+    version: string
+    studentCount: number
+  }[]
+  page: number
+  totalPage: number
+  totalVersionCourse: number
+  totalCourse: number
 }
 
 export interface Assignment {

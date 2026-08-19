@@ -129,7 +129,7 @@ export default function AdminSidebar({ locale }: AdminSidebarProps) {
             <span>{labels.adminPanel}</span>
           </Link>
 
-          {currentPage&& currentPageLabel && currentPage[0] !== "dashboard" && (
+          {currentPage && currentPageLabel && currentPage[0] !== "dashboard" && (
             <>
               <ChevronRight className="mx-1.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />
               <span
@@ -188,7 +188,6 @@ export default function AdminSidebar({ locale }: AdminSidebarProps) {
         <nav className="flex flex-col gap-1">
           {menuItems.map((item) => {
             const Icon = item.icon
-            // Active link checks direct match or nested resource paths
             const isActive = pathname === item.href || (item.href !== `/${locale}/admin` && pathname.startsWith(item.href))
 
             return (

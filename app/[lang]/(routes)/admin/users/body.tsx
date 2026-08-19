@@ -2,7 +2,9 @@
 
 import * as React from "react"
 import { useUsers } from "@/hooks/admin/use-users"
-import { AlertCircle, RefreshCw, Trash2 } from "lucide-react"
+import { useAuth } from "@/providers/auth-provider"
+import { PaginatedResult, User } from "@/types/api"
+import { AlertCircle, RefreshCw, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react"
 import AddUserForm from "@/components/forms/admin/add-user-form"
 
 interface BodyProps {
@@ -29,6 +31,13 @@ const translations = {
     admin: "Admin",
     passwordNotice: "Leave blank to keep existing password when updating.",
     createBtn: "Register User",
+    prev: "Previous",
+    next: "Next",
+    pageOf: "Page {page} of {total}",
+    searchPlaceholder: "Search by name or email...",
+    filterAll: "All Roles",
+    associatedClass: "Class / Course",
+    notApplicable: "N/A"
   },
   bn: {
     title: "ব্যবহারকারীসমূহ ব্যবস্থাপনা",
@@ -49,13 +58,68 @@ const translations = {
     admin: "অ্যাডমিন",
     passwordNotice: "পরিবর্তন করতে না চাইলে পাসওয়ার্ডের ঘরটি ফাঁকা রাখুন।",
     createBtn: "প্রোফাইল তৈরি করুন",
+    prev: "পূর্ববর্তী",
+    next: "পরবর্তী",
+    pageOf: "পৃষ্ঠা {page} / {total}",
+    searchPlaceholder: "নাম বা ইমেল দিয়ে খুঁজুন...",
+    filterAll: "সকল পদবি",
+    associatedClass: "ক্লাস / কোর্স",
+    notApplicable: "প্রযোজ্য নয়"
   }
 }
 
 export default function UsersBody({ locale }: BodyProps) {
-  const { users, loading, error, refresh, createUser, deleteUser } = useUsers()
+  const { loading, error, createUser, deleteUser, searchEngine } = useUsers()
+  const { isLoading: authLoading, isAuthenticated } = useAuth()
   const t = translations[locale]
+
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [paginatedResult, setPaginatedResult] = React.useState<PaginatedResult<User & { courseName?: string | null; courseNameBn?: string | null }> | null>(null)
+  
+  // Search Engine & Filters State
+  const [searchQuery, setSearchQuery] = React.useState("")
+  const [debouncedQuery, setDebouncedQuery] = React.useState("")
+  const [selectedRole, setSelectedRole] = React.useState("")
+  const [currentPage, setCurrentPage] = React.useState(1)
+
+  // 1. Debounce Search Input: only trigger API requests 400ms after user finishes typing
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery)
+    }, 400)
+    return () => clearTimeout(handler)
+  }, [searchQuery])
+
+  const fetchUsersPage = React.useCallback(async (pageNo = 1, queryText = "") => {
+    if (authLoading || !isAuthenticated) return
+    try {
+      const result = await searchEngine({
+        search: queryText || undefined,
+        role: selectedRole || undefined,
+        page: pageNo,
+        pageSize: 10
+      })
+      setPaginatedResult(result)
+      setCurrentPage(pageNo)
+    } catch {
+      // Handled silently by hooks
+    }
+  }, [authLoading, isAuthenticated, selectedRole, searchEngine])
+
+  // 2. Fetch triggering handles search and filter changes seamlessly
+  React.useEffect(() => {
+    let isMounted = true
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        fetchUsersPage(1, debouncedQuery)
+      }
+    }, 0)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [debouncedQuery, selectedRole, fetchUsersPage])
 
   const handleCreateSubmit = async (payload: {
     name: string
@@ -66,6 +130,7 @@ export default function UsersBody({ locale }: BodyProps) {
     setIsSubmitting(true)
     try {
       await createUser(payload)
+      fetchUsersPage(1, debouncedQuery)
     } finally {
       setIsSubmitting(false)
     }
@@ -75,13 +140,21 @@ export default function UsersBody({ locale }: BodyProps) {
     if (confirm(t.confirmDelete)) {
       try {
         await deleteUser(id)
+        fetchUsersPage(currentPage, debouncedQuery)
       } catch {
         // Handled silently
       }
     }
   }
 
-  if (loading && users.length === 0) {
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    fetchUsersPage(1, searchQuery)
+  }
+
+  const isLoading = (loading || authLoading) && !paginatedResult
+
+  if (isLoading) {
     return (
       <div className="p-6 space-y-6 animate-pulse">
         <div className="h-8 w-48 bg-muted rounded"></div>
@@ -99,7 +172,7 @@ export default function UsersBody({ locale }: BodyProps) {
           <p className="text-sm text-muted-foreground mt-1">{t.subtitle}</p>
         </div>
         <button
-          onClick={refresh}
+          onClick={() => fetchUsersPage(currentPage, debouncedQuery)}
           className="self-start md:self-auto flex items-center justify-center h-9 px-3 text-xs font-semibold border rounded-lg hover:bg-accent transition-colors gap-1.5"
         >
           <RefreshCw className="h-3.5 w-3.5" />
@@ -116,6 +189,34 @@ export default function UsersBody({ locale }: BodyProps) {
 
       <AddUserForm onSubmit={handleCreateSubmit} isSubmitting={isSubmitting} t={t} />
 
+      {/* Filter and Search Bar Panel */}
+      <div className="p-4 border rounded-xl bg-background shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center">
+        <form onSubmit={handleSearchSubmit} className="relative w-full md:max-w-md">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder={t.searchPlaceholder}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex h-9 w-full rounded-md border border-input bg-transparent pl-9 pr-3 py-1 text-sm shadow-sm focus-visible:outline-none"
+          />
+        </form>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <select
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+            className="flex h-9 w-full md:w-44 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none"
+          >
+            <option value="">{t.filterAll}</option>
+            <option value="Admin">{t.admin}</option>
+            <option value="Teacher">{t.teacher}</option>
+            <option value="Student">{t.student}</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Users Database Table */}
       <div className="border rounded-xl bg-background shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse text-sm">
           <thead>
@@ -123,18 +224,19 @@ export default function UsersBody({ locale }: BodyProps) {
               <th className="p-4">{t.name}</th>
               <th className="p-4">{t.email}</th>
               <th className="p-4">{t.role}</th>
+              <th className="p-4">{t.associatedClass}</th>
               <th className="p-4 text-right w-32">{t.actions}</th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {users.length === 0 ? (
+            {!paginatedResult || paginatedResult.data.length === 0 ? (
               <tr>
-                <td colSpan={4} className="p-8 text-center text-muted-foreground">
+                <td colSpan={5} className="p-8 text-center text-muted-foreground">
                   {t.empty}
                 </td>
               </tr>
             ) : (
-              users.map((usr) => (
+              paginatedResult.data.map((usr: User & { courseName?: string | null; courseNameBn?: string | null }) => (
                 <tr key={usr.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="p-4 font-semibold text-slate-800">{usr.name}</td>
                   <td className="p-4 text-slate-600">{usr.email}</td>
@@ -146,8 +248,17 @@ export default function UsersBody({ locale }: BodyProps) {
                         ? "bg-blue-50 text-blue-700 border-blue-200" 
                         : "bg-slate-50 text-slate-700 border-slate-200"
                     }`}>
-                      {usr.role}
+                      {usr.role === "Admin" ? t.admin : usr.role === "Teacher" ? t.teacher : t.student}
                     </span>
+                  </td>
+                  <td className="p-4 text-slate-500">
+                    {usr.courseName ? (
+                      <span className="font-semibold text-xs bg-slate-100 border text-slate-700 px-2.5 py-0.5 rounded-md">
+                        {locale === "bn" && usr.courseNameBn ? usr.courseNameBn : usr.courseName}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground/50 text-xs">{t.notApplicable}</span>
+                    )}
                   </td>
                   <td className="p-4 text-right">
                     <button
@@ -163,6 +274,33 @@ export default function UsersBody({ locale }: BodyProps) {
             )}
           </tbody>
         </table>
+
+        {/* Pagination Navigation */}
+        {paginatedResult && paginatedResult.totalPage > 1 && (
+          <div className="flex items-center justify-between border-t p-4 bg-muted/20">
+            <button
+              onClick={() => fetchUsersPage(Math.max(1, currentPage - 1), debouncedQuery)}
+              disabled={currentPage === 1}
+              className="inline-flex items-center gap-1 px-3 h-8 text-xs font-semibold border rounded-lg hover:bg-accent disabled:opacity-40 transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              {t.prev}
+            </button>
+            <span className="text-xs text-muted-foreground">
+              {t.pageOf
+                .replace("{page}", String(currentPage))
+                .replace("{total}", String(paginatedResult.totalPage))}
+            </span>
+            <button
+              onClick={() => fetchUsersPage(Math.min(paginatedResult.totalPage, currentPage + 1), debouncedQuery)}
+              disabled={currentPage === paginatedResult.totalPage}
+              className="inline-flex items-center gap-1 px-3 h-8 text-xs font-semibold border rounded-lg hover:bg-accent disabled:opacity-40 transition-colors"
+            >
+              {t.next}
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

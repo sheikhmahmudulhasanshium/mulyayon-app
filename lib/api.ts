@@ -27,9 +27,8 @@ export async function apiClient(endpoint: string, options: RequestOptions = {}) 
     config.body = JSON.stringify(body)
   }
 
-  // Normalize URLs to strip duplicate slashes (e.g., prevents "api//auth/login")
-  const baseUrl = API_BASE_URL.replace(/\/$/, "") // Remove trailing slash from base
-  const cleanEndpoint = endpoint.replace(/^\//, "") // Remove leading slash from endpoint
+  const baseUrl = API_BASE_URL.replace(/\/$/, "")
+  const cleanEndpoint = endpoint.replace(/^\//, "")
   const targetUrl = `${baseUrl}/${cleanEndpoint}`
 
   try {
@@ -37,6 +36,20 @@ export async function apiClient(endpoint: string, options: RequestOptions = {}) 
 
     if (response.status === 429) {
       throw new Error("Too many requests. Please wait a minute and try again.")
+    }
+
+    // REAL-TIME KICKOUT: If backend returns 401 Unauthorized, the session has expired
+    if (response.status === 401) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("AUTH_TOKEN")
+        document.cookie = "AUTH_TOKEN=; path=/; max-age=0; SameSite=Lax"
+        
+        // Extract current locale from path to preserve language selection during redirect
+        const locale = window.location.pathname.split("/")[1] || "en"
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+        window.location.href = `/${locale}/sign-in`
+      }
+      throw new Error("Session expired. Please sign in again.")
     }
 
     if (!response.ok) {

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { apiClient } from "@/lib/api"
-import { User } from "@/types/api"
+import { User, PaginatedResult } from "@/types/api"
 
 export function useUsers() {
   const [users, setUsers] = React.useState<User[]>([])
@@ -22,7 +22,96 @@ export function useUsers() {
     }
   }, [])
 
-  const createUser = async (payload: Omit<User, "id"> & { password?: string }) => {
+  const getStudentsPaginated = React.useCallback(async (params: {
+    courseId?: string
+    version?: string
+    search?: string
+    page?: number
+    pageSize?: number
+  }): Promise<PaginatedResult<User>> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const query = new URLSearchParams()
+      if (params.courseId) query.append("courseId", params.courseId)
+      if (params.version) query.append("version", params.version)
+      if (params.search) query.append("search", params.search)
+      if (params.page) query.append("page", String(params.page))
+      if (params.pageSize) query.append("pageSize", String(params.pageSize))
+
+      return await apiClient(`admin/students/paginated?${query.toString()}`, {
+        method: "GET",
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load paginated students"
+      setError(msg)
+      throw new Error(msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const getAdminsPaginated = React.useCallback(async (params: {
+    search?: string
+    page?: number
+    pageSize?: number
+  }): Promise<PaginatedResult<User>> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const query = new URLSearchParams()
+      if (params.search) query.append("search", params.search)
+      if (params.page) query.append("page", String(params.page))
+      if (params.pageSize) query.append("pageSize", String(params.pageSize))
+
+      return await apiClient(`admin/admins/paginated?${query.toString()}`, {
+        method: "GET",
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load paginated admins"
+      setError(msg)
+      throw new Error(msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const searchEngine = React.useCallback(async (params: {
+    id?: string
+    name?: string
+    role?: string
+    course?: string
+    specialty?: string
+    search?: string
+    page?: number
+    pageSize?: number
+  }): Promise<PaginatedResult<User & { courseName?: string | null; courseNameBn?: string | null }>> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const query = new URLSearchParams()
+      if (params.id) query.append("id", params.id)
+      if (params.name) query.append("name", params.name)
+      if (params.role) query.append("role", params.role)
+      if (params.course) query.append("course", params.course)
+      if (params.specialty) query.append("specialty", params.specialty)
+      if (params.search) query.append("search", params.search)
+      if (params.page) query.append("page", String(params.page))
+      if (params.pageSize) query.append("pageSize", String(params.pageSize))
+
+      return await apiClient(`admin/users/search-engine?${query.toString()}`, {
+        method: "GET",
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Search engine query failed"
+      setError(msg)
+      throw new Error(msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const createUser = React.useCallback(async (payload: Omit<User, "id"> & { password?: string }) => {
     setError(null)
     try {
       const newUser = await apiClient("admin/users", {
@@ -36,9 +125,9 @@ export function useUsers() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
-  const updateUser = async (id: string, payload: Partial<Omit<User, "id">>) => {
+  const updateUser = React.useCallback(async (id: string, payload: Partial<Omit<User, "id">>) => {
     setError(null)
     try {
       await apiClient(`admin/users/${id}`, {
@@ -53,9 +142,9 @@ export function useUsers() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
-  const deleteUser = async (id: string) => {
+  const deleteUser = React.useCallback(async (id: string) => {
     setError(null)
     try {
       await apiClient(`admin/users/${id}`, { method: "DELETE" })
@@ -65,17 +154,15 @@ export function useUsers() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
   React.useEffect(() => {
     let isMounted = true
-
     const timer = setTimeout(() => {
       if (isMounted) {
         fetchUsers()
       }
     }, 0)
-
     return () => {
       isMounted = false
       clearTimeout(timer)
@@ -87,6 +174,9 @@ export function useUsers() {
     loading,
     error,
     refresh: fetchUsers,
+    getStudentsPaginated,
+    getAdminsPaginated,
+    searchEngine,
     createUser,
     updateUser,
     deleteUser,

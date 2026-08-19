@@ -3,6 +3,7 @@
 
 import * as React from "react"
 import { useRouter, usePathname } from "next/navigation"
+
 // Intercept and silence the harmless React 19 script-tag warning from next-themes on client-side route changes
 if (typeof window !== "undefined") {
   const originalError = console.error
@@ -17,7 +18,6 @@ if (typeof window !== "undefined") {
     originalError(...args)
   }
 }
-
 
 export type Role = "Admin" | "Teacher" | "Student"
 
@@ -78,13 +78,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
 
-  // Recover session asynchronously on mount to prevent cascading rendering cycles
-// Recover session asynchronously on mount to prevent cascading rendering cycles
+  // Recover session asynchronously on mount with cleanup to prevent memory leaks in strict mode
   React.useEffect(() => {
+    let isMounted = true
     const savedToken = localStorage.getItem("AUTH_TOKEN")
 
     // Wrapping the entire logic inside a deferred block satisfies React 19's render rules
-    setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (!isMounted) return
+
       if (savedToken) {
         const decoded = decodeClientJwt(savedToken)
         const isExpired = decoded ? decoded.exp * 1000 < Date.now() : true
@@ -107,7 +109,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setIsLoading(false)
     }, 0)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
   }, [])
+
   // Wrapped inside useCallback to maintain single-instance reference stability
   const login = React.useCallback((
     jwtToken: string, 
@@ -150,7 +158,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push(`/${locale}/sign-in`)
   }, [pathname, router])
 
-  // Included login and logout inside dependencies to satisfy React exhaustive-deps rules
   const value = React.useMemo(
     () => ({
       user,

@@ -1,6 +1,8 @@
 "use client"
 
+import * as React from "react"
 import { useStats } from "@/hooks/admin/use-stats"
+import { useAuth } from "@/providers/auth-provider"
 import { AlertCircle, RefreshCw, Users, BookOpen, Layers, GraduationCap } from "lucide-react"
 
 interface BodyProps {
@@ -44,10 +46,20 @@ const translations = {
 
 export default function Body({ locale }: BodyProps) {
   const { stats, loading, error, refresh } = useStats()
+  const { isLoading: authLoading, isAuthenticated } = useAuth()
   const t = translations[locale]
 
+  // Defer fetching stats until authentication state is resolved to prevent initial 401s
+  React.useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      refresh()
+    }
+  }, [authLoading, isAuthenticated, refresh])
+
+  const isLoading = loading || authLoading
+
   // Render Loading Skeletons
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="p-6 space-y-6 animate-pulse">
         <div className="space-y-2">

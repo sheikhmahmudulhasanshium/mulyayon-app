@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { apiClient } from "@/lib/api"
-import { Subject } from "@/types/api"
+import { Subject, PaginatedSubjectsResult } from "@/types/api"
 
 export function useSubjects() {
   const [subjects, setSubjects] = React.useState<Subject[]>([])
@@ -22,7 +22,29 @@ export function useSubjects() {
     }
   }, [])
 
-  const createSubject = async (name: string, courseId: string) => {
+  const getSubjectsPaginated = React.useCallback(async (
+    version: string,
+    courseIdOrName: string,
+    page = 1,
+    pageSize = 10
+  ): Promise<PaginatedSubjectsResult> => {
+    setLoading(true)
+    setError(null)
+    try {
+      return await apiClient(
+        `admin/getSubjects/${version}/${courseIdOrName}?page=${page}&pageSize=${pageSize}`,
+        { method: "GET" }
+      )
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load paginated subjects"
+      setError(msg)
+      throw new Error(msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const createSubject = React.useCallback(async (name: string, courseId: string) => {
     setError(null)
     try {
       const newSubject = await apiClient("admin/subjects", {
@@ -36,9 +58,9 @@ export function useSubjects() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
-  const updateSubject = async (id: string, name?: string, courseId?: string) => {
+  const updateSubject = React.useCallback(async (id: string, name?: string, courseId?: string) => {
     setError(null)
     try {
       await apiClient(`admin/subjects/${id}`, {
@@ -57,9 +79,9 @@ export function useSubjects() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
-  const deleteSubject = async (id: string) => {
+  const deleteSubject = React.useCallback(async (id: string) => {
     setError(null)
     try {
       await apiClient(`admin/subjects/${id}`, { method: "DELETE" })
@@ -69,17 +91,15 @@ export function useSubjects() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
   React.useEffect(() => {
     let isMounted = true
-
     const timer = setTimeout(() => {
       if (isMounted) {
         fetchSubjects()
       }
     }, 0)
-
     return () => {
       isMounted = false
       clearTimeout(timer)
@@ -91,6 +111,7 @@ export function useSubjects() {
     loading,
     error,
     refresh: fetchSubjects,
+    getSubjectsPaginated,
     createSubject,
     updateSubject,
     deleteSubject,

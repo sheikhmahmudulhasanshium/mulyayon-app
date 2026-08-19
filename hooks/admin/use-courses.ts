@@ -2,9 +2,8 @@
 
 import * as React from "react"
 import { apiClient } from "@/lib/api"
-import { Course } from "@/types/api"
+import { Course, PaginatedCoursesResult } from "@/types/api"
 
-// Helper utility to safely sort courses by their order property
 const sortCourses = (list: Course[]): Course[] => {
   return [...list].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 }
@@ -19,7 +18,6 @@ export function useCourses() {
     setError(null)
     try {
       const data = await apiClient("admin/courses", { method: "GET" })
-      // Server-side sorted, but keeping a client-side sort as a fallback defense
       setCourses(sortCourses(data))
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load courses")
@@ -28,14 +26,35 @@ export function useCourses() {
     }
   }, [])
 
-  const createCourse = async (name: string) => {
+  const getCoursesPaginated = React.useCallback(async (
+    version: string,
+    level: string,
+    page = 1,
+    pageSize = 10
+  ): Promise<PaginatedCoursesResult> => {
+    setLoading(true)
+    setError(null)
+    try {
+      return await apiClient(
+        `admin/getCourses/${version}/${level}?page=${page}&pageSize=${pageSize}`,
+        { method: "GET" }
+      )
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load paginated courses"
+      setError(msg)
+      throw new Error(msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const createCourse = React.useCallback(async (name: string) => {
     setError(null)
     try {
       const newCourse = await apiClient("admin/courses", {
         method: "POST",
         body: { name },
       })
-      // Automatically sorts the list locally after adding
       setCourses((prev) => sortCourses([...prev, newCourse]))
       return newCourse
     } catch (err) {
@@ -43,9 +62,9 @@ export function useCourses() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
-  const updateCourse = async (id: string, name: string) => {
+  const updateCourse = React.useCallback(async (id: string, name: string) => {
     setError(null)
     try {
       await apiClient(`admin/courses/${id}`, {
@@ -60,9 +79,9 @@ export function useCourses() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
-  const deleteCourse = async (id: string) => {
+  const deleteCourse = React.useCallback(async (id: string) => {
     setError(null)
     try {
       await apiClient(`admin/courses/${id}`, { method: "DELETE" })
@@ -72,17 +91,15 @@ export function useCourses() {
       setError(msg)
       throw new Error(msg)
     }
-  }
+  }, [])
 
   React.useEffect(() => {
     let isMounted = true
-
     const timer = setTimeout(() => {
       if (isMounted) {
         fetchCourses()
       }
     }, 0)
-
     return () => {
       isMounted = false
       clearTimeout(timer)
@@ -94,6 +111,7 @@ export function useCourses() {
     loading,
     error,
     refresh: fetchCourses,
+    getCoursesPaginated,
     createCourse,
     updateCourse,
     deleteCourse,

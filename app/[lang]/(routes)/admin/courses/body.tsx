@@ -3,7 +3,8 @@
 import * as React from "react"
 import { useCourses } from "@/hooks/admin/use-courses"
 import { useStats } from "@/hooks/admin/use-stats"
-import { Course } from "@/types/api"
+import { useAuth } from "@/providers/auth-provider"
+import { Course, PaginatedCoursesResult } from "@/types/api"
 import { 
   AlertCircle, 
   RefreshCw, 
@@ -13,7 +14,8 @@ import {
   X, 
   ChevronRight, 
   ArrowLeft,
- // Users
+  ChevronLeft,
+  Users
 } from "lucide-react"
 import AddCourseForm from "@/components/forms/admin/add-course-form"
 
@@ -38,8 +40,6 @@ const translations = {
     empty: "No classes found under this category.",
     refresh: "Refresh",
     enrolledStudents: "Enrolled Students",
-    
-    // Step Selector translations
     stepMedium: "1. Select Medium / Version",
     stepLevel: "2. Select Level",
     bvLabel: "Bangla Version (BV)",
@@ -49,6 +49,9 @@ const translations = {
     higherSecondary: "Higher Secondary",
     backBtn: "Back",
     allClasses: "Classes List",
+    prev: "Previous",
+    next: "Next",
+    pageOf: "Page {page} of {total}"
   },
   bn: {
     title: "কোর্সসমূহ ব্যবস্থাপনা",
@@ -66,8 +69,6 @@ const translations = {
     empty: "এই বিভাগে কোনো ক্লাস পাওয়া যায়নি।",
     refresh: "রিফ্রেশ",
     enrolledStudents: "ভর্তিকৃত শিক্ষার্থী সংখ্যা",
-
-    // Step Selector translations
     stepMedium: "১. ভার্সন / মাধ্যম নির্বাচন করুন",
     stepLevel: "২. স্তর নির্বাচন করুন",
     bvLabel: "বাংলা ভার্সন (BV)",
@@ -77,84 +78,72 @@ const translations = {
     higherSecondary: "উচ্চ মাধ্যমিক",
     backBtn: "পেছনে যান",
     allClasses: "ক্লাস সমূহ",
+    prev: "পূর্ববর্তী",
+    next: "পরবর্তী",
+    pageOf: "পৃষ্ঠা {page} / {total}"
   }
 }
 
 export default function CoursesBody({ locale }: BodyProps) {
-  const { courses, loading: coursesLoading, error: coursesError, refresh: refreshCourses, createCourse, updateCourse, deleteCourse } = useCourses()
-  const { stats, loading: statsLoading, refresh: refreshStats } = useStats()
+  const { loading: coursesLoading, error: coursesError, getCoursesPaginated, createCourse, updateCourse, deleteCourse } = useCourses()
+  const { loading: statsLoading, refresh: refreshStats } = useStats()
+  const { isLoading: authLoading, isAuthenticated } = useAuth()
   const t = translations[locale]
 
   // Flow State
   const [selectedVersion, setSelectedVersion] = React.useState<"BV" | "EV" | null>(null)
   const [selectedLevel, setSelectedLevel] = React.useState<string | null>(null)
   
+  // Paginated Courses Data
+  const [paginatedData, setPaginatedData] = React.useState<PaginatedCoursesResult | null>(null)
+  const [currentPage, setCurrentPage] = React.useState(1)
+
   // Edit State
   const [editingId, setEditingId] = React.useState<string | null>(null)
   const [editingName, setEditingName] = React.useState("")
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  // Reset steps
+  const levelOptions = ["Primary", "Secondary", "Higher Secondary"]
+
+  const fetchCurrentCourses = React.useCallback(async (version: "BV" | "EV", level: string, page: number) => {
+    if (authLoading || !isAuthenticated) return
+    try {
+      const result = await getCoursesPaginated(version, level, page, 6)
+      setPaginatedData(result)
+    } catch {
+      // Handled inside hook
+    }
+  }, [authLoading, isAuthenticated, getCoursesPaginated])
+
+  React.useEffect(() => {
+    let isMounted = true
+    const timer = setTimeout(() => {
+      if (isMounted && selectedVersion && selectedLevel) {
+        fetchCurrentCourses(selectedVersion, selectedLevel, currentPage)
+      }
+    }, 0)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [selectedVersion, selectedLevel, currentPage, fetchCurrentCourses])
+
   const handleReset = () => {
     setSelectedVersion(null)
     setSelectedLevel(null)
+    setPaginatedData(null)
+    setCurrentPage(1)
     setEditingId(null)
   }
-
-  // Filter local helper
-  const getVersionFilteredCourses = React.useCallback((ver: "BV" | "EV") => {
-    const targetVersions = ver === "BV" ? ["Bangla", "BV"] : ["English", "EV"]
-    return courses.filter((c) => targetVersions.includes(c.version))
-  }, [courses])
-
-  const versionCourses = React.useMemo(() => {
-    return selectedVersion ? getVersionFilteredCourses(selectedVersion) : []
-  }, [selectedVersion, getVersionFilteredCourses])
-
-  const levelOptions = React.useMemo(() => {
-    return Array.from(new Set(versionCourses.map((c) => c.level)))
-  }, [versionCourses])
-
-  const finalCourses = React.useMemo(() => {
-    return versionCourses.filter((c) => c.level === selectedLevel)
-  }, [versionCourses, selectedLevel])
-
-  // Multi-layer key matching algorithm to resolve student counts accurately
-  const getStudentCount = React.useCallback((course: Course) => {
-    if (!stats || !selectedVersion) return 0
-    const versionPool = stats.students.byVersion[selectedVersion]
-    if (!versionPool) return 0
-
-    // Match 1: Match by English name (e.g. "Class 1")
-    if (versionPool[course.name] !== undefined) {
-      return versionPool[course.name]
-    }
-
-    // Match 2: Match by Bengali name (e.g. "শ্রেণী ১")
-    if (course.nameBn && versionPool[course.nameBn] !== undefined) {
-      return versionPool[course.nameBn]
-    }
-
-    // Match 3: Match by raw database Course ID
-    if (versionPool[course.id] !== undefined) {
-      return versionPool[course.id]
-    }
-
-    // Match 4: Case insensitive fallback match
-    const caseKey = Object.keys(versionPool).find(
-      (key) => key.toLowerCase() === course.name.toLowerCase()
-    )
-    if (caseKey && versionPool[caseKey] !== undefined) {
-      return versionPool[caseKey]
-    }
-
-    return 0
-  }, [stats, selectedVersion])
 
   const handleCreateSubmit = async (name: string) => {
     setIsSubmitting(true)
     try {
       await createCourse(name)
+      if (selectedVersion && selectedLevel) {
+        fetchCurrentCourses(selectedVersion, selectedLevel, currentPage)
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -165,8 +154,11 @@ export default function CoursesBody({ locale }: BodyProps) {
     try {
       await updateCourse(id, editingName)
       setEditingId(null)
+      if (selectedVersion && selectedLevel) {
+        fetchCurrentCourses(selectedVersion, selectedLevel, currentPage)
+      }
     } catch {
-      // Handled by hook
+      // Handled inside hook
     }
   }
 
@@ -174,20 +166,25 @@ export default function CoursesBody({ locale }: BodyProps) {
     if (confirm(t.confirmDelete)) {
       try {
         await deleteCourse(id)
+        if (selectedVersion && selectedLevel) {
+          fetchCurrentCourses(selectedVersion, selectedLevel, currentPage)
+        }
       } catch {
-        // Handled by hook
+        // Handled inside hook
       }
     }
   }
 
   const triggerRefresh = () => {
-    refreshCourses()
+    if (selectedVersion && selectedLevel) {
+      fetchCurrentCourses(selectedVersion, selectedLevel, currentPage)
+    }
     refreshStats()
   }
 
-  const isLoading = coursesLoading || statsLoading
+  const isLoading = coursesLoading || statsLoading || authLoading
 
-  if (isLoading && courses.length === 0) {
+  if (isLoading && !paginatedData) {
     return (
       <div className="p-6 space-y-6 animate-pulse">
         <div className="h-8 w-48 bg-muted rounded"></div>
@@ -206,7 +203,7 @@ export default function CoursesBody({ locale }: BodyProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-500">{t.title}</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{t.title}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t.subtitle}</p>
         </div>
         <button
@@ -225,7 +222,6 @@ export default function CoursesBody({ locale }: BodyProps) {
         </div>
       )}
 
-      {/* Passing Type Safe Props explicitly matching Form Requirement */}
       <AddCourseForm 
         onSubmit={handleCreateSubmit} 
         isSubmitting={isSubmitting} 
@@ -246,13 +242,13 @@ export default function CoursesBody({ locale }: BodyProps) {
             <div className="grid gap-4 sm:grid-cols-2 max-w-2xl">
               <button
                 onClick={() => setSelectedVersion("BV")}
-                className="flex flex-col items-start p-5 border rounded-xl hover:bg-slate-50 text-left transition-all"
+                className="flex flex-col items-start p-5 border rounded-xl hover:bg-slate-50/50 text-left transition-all"
               >
                 <span className="text-lg font-bold text-blue-900">{t.bvLabel}</span>
               </button>
               <button
                 onClick={() => setSelectedVersion("EV")}
-                className="flex flex-col items-start p-5 border rounded-xl hover:bg-slate-50 text-left transition-all"
+                className="flex flex-col items-start p-5 border rounded-xl hover:bg-slate-50/50 text-left transition-all"
               >
                 <span className="text-lg font-bold text-blue-950">{t.evLabel}</span>
               </button>
@@ -276,7 +272,7 @@ export default function CoursesBody({ locale }: BodyProps) {
                   <button
                     key={lvl}
                     onClick={() => setSelectedLevel(lvl)}
-                    className="p-4 border rounded-xl hover:bg-slate-50 text-left font-bold text-slate-700 transition-all flex items-center justify-between"
+                    className="p-4 border rounded-xl hover:bg-slate-50/50 text-left font-bold text-slate-700 dark:text-slate-200 transition-all flex items-center justify-between"
                   >
                     <span>{localizedLvl}</span>
                     <ChevronRight className="h-4 w-4 text-slate-400" />
@@ -302,7 +298,7 @@ export default function CoursesBody({ locale }: BodyProps) {
               <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
                 <button onClick={handleReset} className="hover:text-blue-900">{selectedVersion === "BV" ? t.bvLabel : t.evLabel}</button>
                 <ChevronRight className="h-3 w-3" />
-                <button onClick={() => setSelectedLevel(null)} className="hover:text-blue-900">
+                <button onClick={() => { setSelectedLevel(null); setPaginatedData(null); }} className="hover:text-blue-900">
                   {selectedLevel === "Primary" ? t.primary : selectedLevel === "Secondary" ? t.secondary : selectedLevel === "Higher Secondary" ? t.higherSecondary : selectedLevel}
                 </button>
                 <ChevronRight className="h-3 w-3" />
@@ -310,7 +306,7 @@ export default function CoursesBody({ locale }: BodyProps) {
               </div>
 
               <button
-                onClick={() => setSelectedLevel(null)}
+                onClick={() => { setSelectedLevel(null); setPaginatedData(null); }}
                 className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-semibold"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
@@ -318,88 +314,117 @@ export default function CoursesBody({ locale }: BodyProps) {
               </button>
             </div>
 
-            {finalCourses.length === 0 ? (
+            {!paginatedData || paginatedData.data.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">{t.empty}</div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {finalCourses.map((course) => {
-                  //const studentCount = getStudentCount(course)
-                  const isEditing = editingId === course.id
+              <div className="space-y-6">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {paginatedData.data.map((course: Course & { studentCount: number }) => {
+                    const isEditing = editingId === course.id
 
-                  return (
-                    <div 
-                      key={course.id} 
-                      className="p-5 border rounded-xl bg-background shadow-sm space-y-4 flex flex-col justify-between"
+                    return (
+                      <div 
+                        key={course.id} 
+                        className="p-5 border rounded-xl bg-background shadow-sm space-y-4 flex flex-col justify-between"
+                      >
+                        <div className="space-y-1">
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editingName}
+                              onChange={(e) => setEditingName(e.target.value)}
+                              className="h-9 px-2 border rounded-md text-sm w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-transparent"
+                            />
+                          ) : (
+                            <>
+                              <h4 className="font-bold text-slate-900 dark:text-slate-100 text-lg">
+                                {locale === "bn" ? course.nameBn : course.name}
+                              </h4>
+                              <p className="text-xs text-slate-400 font-semibold">
+                                {locale === "bn" ? course.name : course.nameBn}
+                              </p>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Student Count Display */}
+                        <div className="flex items-center gap-2 text-xs bg-slate-50 dark:bg-slate-900 border p-2.5 rounded-lg text-slate-700 dark:text-slate-300">
+                          <Users className="h-4 w-4 text-blue-900/70 dark:text-blue-400/70" />
+                          <span className="font-medium">{t.enrolledStudents}:</span>
+                          <strong className="text-blue-900 dark:text-blue-400 font-bold ml-auto">
+                            {course.studentCount}
+                          </strong>
+                        </div>
+
+                        {/* Card Actions */}
+                        <div className="flex items-center justify-end gap-1.5 border-t pt-3">
+                          {isEditing ? (
+                            <>
+                              <button
+                                onClick={() => handleSaveEdit(course.id)}
+                                className="p-1.5 border rounded hover:bg-slate-50 dark:hover:bg-slate-900 text-emerald-600"
+                                title={t.save}
+                              >
+                                <Check className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => setEditingId(null)}
+                                className="p-1.5 border rounded hover:bg-slate-50 dark:hover:bg-slate-900 text-rose-600"
+                                title={t.cancel}
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => { setEditingId(course.id); setEditingName(course.name); }}
+                                className="p-1.5 border rounded hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400"
+                                title={t.edit}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(course.id)}
+                                className="p-1.5 border rounded hover:bg-rose-50 dark:hover:bg-rose-950/25 hover:border-destructive/20 text-destructive"
+                                title={t.delete}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Pagination Navigation */}
+                {paginatedData.totalPage > 1 && (
+                  <div className="flex items-center justify-between border-t pt-4">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="inline-flex items-center gap-1 px-3 h-8 text-xs font-semibold border rounded-lg hover:bg-accent disabled:opacity-40 transition-colors"
                     >
-                      {/* Course Title and Inputs */}
-                      <div className="space-y-1">
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editingName}
-                            onChange={(e) => setEditingName(e.target.value)}
-                            className="h-9 px-2 border rounded-md text-sm w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                          />
-                        ) : (
-                          <>
-                            <h4 className="font-bold text-slate-900 dark:text-slate-500 text-lg">
-                              {locale === "bn" ? course.nameBn : course.name}
-                            </h4>
-                            <p className="text-xs text-slate-400 font-semibold">                              {locale === "bn" ? course.name : course.nameBn}</p>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Enrolled Students Display */}
-                      {/**
-                       * <div className="flex items-center gap-2 text-xs bg-slate-50 border p-2.5 rounded-lg text-slate-700">
-                        <Users className="h-4 w-4 text-blue-900/70" />
-                        <span className="font-medium">{t.enrolledStudents}:</span>
-                        <strong className="text-blue-900 font-bold ml-auto">{studentCount}</strong>
-                      </div>
-                       */}
-
-                      {/* Card Actions */}
-                      <div className="flex items-center justify-end gap-1.5 border-t pt-3">
-                        {isEditing ? (
-                          <>
-                            <button
-                              onClick={() => handleSaveEdit(course.id)}
-                              className="p-1.5 border rounded hover:bg-slate-50 text-emerald-600"
-                              title={t.save}
-                            >
-                              <Check className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => setEditingId(null)}
-                              className="p-1.5 border rounded hover:bg-slate-50 text-rose-600"
-                              title={t.cancel}
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() => { setEditingId(course.id); setEditingName(course.name); }}
-                              className="p-1.5 border rounded hover:bg-slate-50 text-slate-600"
-                              title={t.edit}
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(course.id)}
-                              className="p-1.5 border rounded hover:bg-rose-50 hover:border-destructive/20 text-destructive"
-                              title={t.delete}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
+                      <ChevronLeft className="h-4 w-4" />
+                      {t.prev}
+                    </button>
+                    <span className="text-xs text-muted-foreground">
+                      {t.pageOf
+                        .replace("{page}", String(currentPage))
+                        .replace("{total}", String(paginatedData.totalPage))}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.min(paginatedData.totalPage, p + 1))}
+                      disabled={currentPage === paginatedData.totalPage}
+                      className="inline-flex items-center gap-1 px-3 h-8 text-xs font-semibold border rounded-lg hover:bg-accent disabled:opacity-40 transition-colors"
+                    >
+                      {t.next}
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>

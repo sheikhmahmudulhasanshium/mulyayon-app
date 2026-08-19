@@ -3,9 +3,10 @@
 import * as React from "react"
 import { useTeachers } from "@/hooks/admin/use-teachers"
 import { useSubjects } from "@/hooks/admin/use-subjects"
-import { User } from "@/types/api"
+import { useAuth } from "@/providers/auth-provider"
+import { User, PaginatedResult } from "@/types/api"
 import TeacherFilters from "./TeacherFilter"
-import { AlertCircle, UserMinus, UserCheck, ShieldAlert } from "lucide-react"
+import { AlertCircle, UserMinus, UserCheck, ShieldAlert, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface BodyProps {
   locale: "en" | "bn"
@@ -35,6 +36,9 @@ const translations = {
     successAssign: "Teacher successfully assigned",
     successUnassign: "Teacher successfully unassigned",
     choose: "Choose Subject",
+    prev: "Previous",
+    next: "Next",
+    pageOf: "Page {page} of {total}"
   },
   bn: {
     title: "শিক্ষক বণ্টন ব্যবস্থাপনা",
@@ -59,12 +63,16 @@ const translations = {
     successAssign: "শিক্ষক বণ্টন সফল হয়েছে",
     successUnassign: "শিক্ষক বণ্টন বাতিল সফল হয়েছে",
     choose: "বিষয় নির্বাচন করুন",
+    prev: "পূর্ববর্তী",
+    next: "পরবর্তী",
+    pageOf: "পৃষ্ঠা {page} / {total}"
   }
 }
 
 export default function TeachersBody({ locale }: BodyProps) {
-  const { loading: teachersLoading, error: teachersError, assignTeacher, unassignTeacher, getUnassignedTeachers, searchTeachers } = useTeachers()
+  const { loading: teachersLoading, error: teachersError, assignTeacher, unassignTeacher, getUnassignedTeachers, getTeachersPaginated } = useTeachers()
   const { subjects, loading: subjectsLoading } = useSubjects()
+  const { isLoading: authLoading, isAuthenticated } = useAuth()
   const t = translations[locale]
 
   // Filter local state
@@ -73,39 +81,39 @@ export default function TeachersBody({ locale }: BodyProps) {
   const [version, setVersion] = React.useState("")
   const [onlyUnassigned, setOnlyUnassigned] = React.useState(false)
 
-  const [searchResults, setSearchResults] = React.useState<User[]>([])
+  const [paginatedTeachers, setPaginatedTeachers] = React.useState<PaginatedResult<User> | null>(null)
+  const [currentPage, setCurrentPage] = React.useState(1)
   const [unassignedCount, setUnassignedCount] = React.useState(0)
   const [selectedSubjectId, setSelectedSubjectId] = React.useState("")
   const [isProcessing, setIsProcessing] = React.useState(false)
   const [notif, setNotif] = React.useState<{ type: "success" | "error"; msg: string } | null>(null)
 
-  const actionsRef = React.useRef({ getUnassignedTeachers, searchTeachers })
-  React.useEffect(() => {
-    actionsRef.current = { getUnassignedTeachers, searchTeachers }
-  }, [getUnassignedTeachers, searchTeachers])
-
   const fetchUnassignedSummary = React.useCallback(async () => {
+    if (authLoading || !isAuthenticated) return
     try {
-      const data = await actionsRef.current.getUnassignedTeachers()
+      const data = await getUnassignedTeachers()
       setUnassignedCount(data.count)
     } catch {
       // Handled silently
     }
-  }, [])
+  }, [authLoading, isAuthenticated, getUnassignedTeachers])
 
-  const handleSearch = React.useCallback(async () => {
+  const handleSearch = React.useCallback(async (pageNo = 1) => {
+    if (authLoading || !isAuthenticated) return
     try {
-      const results = await actionsRef.current.searchTeachers({
+      const results = await getTeachersPaginated({
         level: level || undefined,
         specialty: specialty || undefined,
         version: version || undefined,
-        onlyUnassigned,
+        page: pageNo,
+        pageSize: 10
       })
-      setSearchResults(results)
+      setPaginatedTeachers(results)
+      setCurrentPage(pageNo)
     } catch (err) {
       setNotif({ type: "error", msg: err instanceof Error ? err.message : "Search failed" })
     }
-  }, [level, specialty, version, onlyUnassigned])
+  }, [authLoading, isAuthenticated, level, specialty, version, getTeachersPaginated])
 
   React.useEffect(() => {
     let isMounted = true
@@ -114,7 +122,7 @@ export default function TeachersBody({ locale }: BodyProps) {
       if (isMounted) {
         await Promise.all([
           fetchUnassignedSummary(),
-          handleSearch()
+          handleSearch(1)
         ])
       }
     }
@@ -137,7 +145,7 @@ export default function TeachersBody({ locale }: BodyProps) {
       await assignTeacher(teacherId, selectedSubjectId)
       setNotif({ type: "success", msg: t.successAssign })
       fetchUnassignedSummary()
-      handleSearch()
+      handleSearch(currentPage)
     } catch (err) {
       setNotif({ type: "error", msg: err instanceof Error ? err.message : "Action failed" })
     } finally {
@@ -153,7 +161,7 @@ export default function TeachersBody({ locale }: BodyProps) {
       await unassignTeacher(teacherId, selectedSubjectId)
       setNotif({ type: "success", msg: t.successUnassign })
       fetchUnassignedSummary()
-      handleSearch()
+      handleSearch(currentPage)
     } catch (err) {
       setNotif({ type: "error", msg: err instanceof Error ? err.message : "Action failed" })
     } finally {
@@ -161,7 +169,7 @@ export default function TeachersBody({ locale }: BodyProps) {
     }
   }
 
-  const isLoading = teachersLoading || subjectsLoading
+  const isLoading = teachersLoading || subjectsLoading || authLoading
   const activeError = notif?.msg || teachersError
 
   return (
@@ -197,7 +205,7 @@ export default function TeachersBody({ locale }: BodyProps) {
           setVersion={setVersion}
           onlyUnassigned={onlyUnassigned}
           setOnlyUnassigned={setOnlyUnassigned}
-          onSearch={handleSearch}
+          onSearch={() => handleSearch(1)}
           t={t}
         />
 
@@ -221,59 +229,88 @@ export default function TeachersBody({ locale }: BodyProps) {
           </div>
 
           <div className="border rounded-xl bg-background shadow-sm overflow-hidden">
-            {isLoading ? (
+            {isLoading && !paginatedTeachers ? (
               <div className="p-8 space-y-4 animate-pulse">
                 {[...Array(2)].map((_, idx) => (
                   <div key={idx} className="h-10 bg-muted rounded-md" />
                 ))}
               </div>
-            ) : searchResults.length === 0 ? (
+            ) : !paginatedTeachers || paginatedTeachers.data.length === 0 ? (
               <div className="p-12 text-center text-muted-foreground">{t.empty}</div>
             ) : (
-              <table className="w-full text-left border-collapse text-sm">
-                <thead>
-                  <tr className="border-b bg-muted/20 font-medium text-slate-500">
-                    <th className="p-4">{t.teacherColumn}</th>
-                    <th className="p-4">{t.role}</th>
-                    <th className="p-4 text-right">{t.actions}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {searchResults.map((teacher) => (
-                    <tr key={teacher.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="p-4">
-                        <div className="font-bold text-slate-900">{teacher.name}</div>
-                        <div className="text-xs text-slate-500">{teacher.email}</div>
-                      </td>
-                      <td className="p-4">
-                        <span className="text-xs bg-slate-100 border text-slate-800 px-2.5 py-0.5 rounded-full font-semibold">
-                          {teacher.role}
-                        </span>
-                      </td>
-                      <td className="p-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => handleAssign(teacher.id)}
-                            disabled={isProcessing || !selectedSubjectId}
-                            className="inline-flex items-center justify-center gap-1 px-3 h-8 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 rounded-lg transition-colors"
-                          >
-                            <UserCheck className="h-3.5 w-3.5" />
-                            {t.assign}
-                          </button>
-                          <button
-                            onClick={() => handleUnassign(teacher.id)}
-                            disabled={isProcessing || !selectedSubjectId}
-                            className="inline-flex items-center justify-center gap-1 px-3 h-8 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-40 rounded-lg transition-colors"
-                          >
-                            <UserMinus className="h-3.5 w-3.5" />
-                            {t.unassign}
-                          </button>
-                        </div>
-                      </td>
+              <div>
+                <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b bg-muted/20 font-medium text-slate-500">
+                      <th className="p-4">{t.teacherColumn}</th>
+                      <th className="p-4">{t.role}</th>
+                      <th className="p-4 text-right">{t.actions}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y">
+                    {paginatedTeachers.data.map((teacher: User) => (
+                      <tr key={teacher.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="p-4">
+                          <div className="font-bold text-slate-900">{teacher.name}</div>
+                          <div className="text-xs text-slate-500">{teacher.email}</div>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-xs bg-slate-100 border text-slate-800 px-2.5 py-0.5 rounded-full font-semibold">
+                            {teacher.role}
+                          </span>
+                        </td>
+                        <td className="p-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleAssign(teacher.id)}
+                              disabled={isProcessing || !selectedSubjectId}
+                              className="inline-flex items-center justify-center gap-1 px-3 h-8 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 rounded-lg transition-colors"
+                            >
+                              <UserCheck className="h-3.5 w-3.5" />
+                              {t.assign}
+                            </button>
+                            <button
+                              onClick={() => handleUnassign(teacher.id)}
+                              disabled={isProcessing || !selectedSubjectId}
+                              className="inline-flex items-center justify-center gap-1 px-3 h-8 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-40 rounded-lg transition-colors"
+                            >
+                              <UserMinus className="h-3.5 w-3.5" />
+                              {t.unassign}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Pagination Controls */}
+                {paginatedTeachers.totalPage > 1 && (
+                  <div className="flex items-center justify-between border-t p-4 bg-muted/20">
+                    <button
+                      onClick={() => handleSearch(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      className="inline-flex items-center gap-1 px-3 h-8 text-xs font-semibold border rounded-lg hover:bg-accent disabled:opacity-40 transition-colors"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      {t.prev}
+                    </button>
+                    <span className="text-xs text-muted-foreground">
+                      {t.pageOf
+                        .replace("{page}", String(currentPage))
+                        .replace("{total}", String(paginatedTeachers.totalPage))}
+                    </span>
+                    <button
+                      onClick={() => handleSearch(Math.min(paginatedTeachers.totalPage, currentPage + 1))}
+                      disabled={currentPage === paginatedTeachers.totalPage}
+                      className="inline-flex items-center gap-1 px-3 h-8 text-xs font-semibold border rounded-lg hover:bg-accent disabled:opacity-40 transition-colors"
+                    >
+                      {t.next}
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
