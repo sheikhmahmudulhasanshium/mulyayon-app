@@ -4,21 +4,21 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 import { constructMetadata } from "@/components/common/metadata";
-import AdminSidebar from "./AdminSidebar";
+import AdminSidebar from "../AdminSidebar";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const locale = lang === "bn" ? "bn" : "en";
 
   return constructMetadata({
-    title: { bn: "অ্যাডমিন ড্যাশবোর্ড | মূল্যায়ন অ্যাপ", en: "Admin Dashboard | Mulyayon App" },
+    title: { bn: "ব্যবহারকারীগণ | অ্যাডমিন", en: "Users | Admin Dashboard" },
     description: { bn: "কাজ হোক প্রমাণ", en: "Let Your Work Speak" },
-    path: "/admin",
+    path: "/admin/users",
     locale,
   });
 }
 
-export default async function AdminPage({ params }: { params: Promise<{ lang: string }> }) {
+export default async function AdminUsersPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const locale = lang === "bn" ? "bn" : "en";
 
