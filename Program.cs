@@ -30,7 +30,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// 3. Configure Built-In IP-Based Rate Limiting (DDoS Mitigation)
+// Configure Built-In IP-Based Rate Limiting (DDoS Mitigation)
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -76,22 +76,38 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// 1. Configure CORS (Correct top-level placement - outside of Swagger options block)
+// Configure CORS (Allowed origins for local dev and production)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://mulyayon.vercel.app") // Local dev and production URL
+        policy.WithOrigins("http://localhost:3000", "https://mulyayon.vercel.app")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials(); // Allows cookies/tokens to pass safely
     });
 });
 
-// 2. Configure Swagger with Authorize locks
+// Configure Swagger with custom sorting and Auth locks
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "School API", Version = "v1" });
+
+    // Custom sort order: Force Auth controller to the top of the UI list
+    options.OrderActionsBy(apiDesc =>
+    {
+        var controllerName = apiDesc.ActionDescriptor.RouteValues["controller"] ?? string.Empty;
+        
+        // Assign Auth controller a prefix value of "0" so it sorts first
+        if (controllerName.Equals("Auth", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"0_{controllerName}_{apiDesc.RelativePath}";
+        }
+        
+        // Assign other controllers a prefix value of "1" to sort alphabetically below Auth
+        return $"1_{controllerName}_{apiDesc.RelativePath}";
+    });
+
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -139,9 +155,11 @@ app.UseSwaggerUI(options =>
 
 app.UseHttpsRedirection();
 app.UseStaticFiles(); 
-app.UseRateLimiter(); 
 
-app.UseCors("AllowFrontend"); // <-- Correctly placed middleware pipeline execution
+// Swapped Order: CORS must execute before Rate Limiting so that CORS preflight 
+// OPTIONS requests are decorated with headers before potential rate-limiter interceptions.
+app.UseCors("AllowFrontend"); 
+app.UseRateLimiter(); 
 
 app.UseAuthentication(); 
 app.UseAuthorization();
