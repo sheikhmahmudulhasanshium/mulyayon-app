@@ -40,10 +40,24 @@ public class AdminController : ControllerBase
             return BadRequest(new { message = $"A Course/Class named '{dto.Name}' already exists." });
         }
 
-        var course = new Course { Name = dto.Name };
+        // Retrieve the highest Order value currently in the collection
+        var highestOrderCourse = await _context.Courses
+            .Find(Builders<Course>.Filter.Empty)
+            .SortByDescending(c => c.Order)
+            .FirstOrDefaultAsync();
+
+        // If courses exist, increment the highest order by 1, otherwise start at 1
+        int nextOrder = highestOrderCourse != null ? highestOrderCourse.Order + 1 : 1;
+
+        var course = new Course 
+        { 
+            Name = dto.Name,
+            Order = nextOrder
+        };
+        
         await _context.Courses.InsertOneAsync(course);
 
-        Log.Information("course-added-----id:{Id}-----name:{Name}", course.Id, course.Name);
+        Log.Information("course-added-----id:{Id}-----name:{Name}-----order:{Order}", course.Id, course.Name, course.Order);
         return CreatedAtAction(nameof(GetCourses), new { id = course.Id }, course);
     }
 
