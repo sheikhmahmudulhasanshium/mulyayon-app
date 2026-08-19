@@ -98,7 +98,7 @@ public static class DbSeeder
                     NameBn = $"{bc.NameBn} (ইংরেজি সংস্করণ)",
                     Level = bc.Level,
                     Version = "English",
-                    Order =orderIndex
+                    Order = orderIndex
                 });
                 orderIndex++;
             }
@@ -369,9 +369,16 @@ public static class DbSeeder
             }
 
             await context.Users.InsertManyAsync(teachersToInsert);
-            var savedTeachers = await context.Users.Find(u => u.Role == "Teacher").ToListAsync();
 
+            // Fetch active teachers, excluding the dummy/demo account as requested
+            var savedTeachers = await context.Users
+                .Find(u => u.Role == "Teacher" && u.Email != "teacher@school.com")
+                .ToListAsync();
+
+            // Track workload counts to distribute subjects evenly and fairly
+            var teacherWorkloads = savedTeachers.ToDictionary(t => t.Id!, t => 0);
             var rand = new Random();
+
             foreach (var subject in allSubjects)
             {
                 var parentCourse = allCourses.FirstOrDefault(c => c.Id == subject.CourseId);
@@ -389,12 +396,38 @@ public static class DbSeeder
                     return levelMatch && versionMatch && specMatch;
                 }).ToList();
 
-                if (qualified.Count < 5)
+                // Fallback to all saved teachers if strict filters yield zero candidates
+                if (qualified.Count == 0)
                 {
                     qualified = savedTeachers;
                 }
 
-                var selected = qualified.OrderBy(_ => rand.Next()).Take(5).Select(t => t.Id!).ToList();
+                // Balance Workloads:
+                // 1. Sort by current workload (ascending) so under-assigned teachers are picked first
+                // 2. Randomize among equivalent workloads to preserve database variance
+                var selected = qualified
+                    .OrderBy(t => teacherWorkloads[t.Id!])
+                    .ThenBy(_ => rand.Next())
+                    .Take(3) // Assigns exactly 3 teachers per subject as requested
+                    .Select(t => t.Id!)
+                    .ToList();
+
+                // Defend against boundary cases: Ensure we get exactly 3 teachers if available
+                if (selected.Count < 3 && savedTeachers.Count >= 3)
+                {
+                    var extra = savedTeachers
+                        .Where(t => !selected.Contains(t.Id!))
+                        .OrderBy(t => teacherWorkloads[t.Id!])
+                        .Take(3 - selected.Count)
+                        .Select(t => t.Id!);
+                    selected.AddRange(extra);
+                }
+
+                // Log workload counts
+                foreach (var teacherId in selected)
+                {
+                    teacherWorkloads[teacherId]++;
+                }
 
                 await context.Subjects.UpdateOneAsync(
                     Builders<Subject>.Filter.Eq(s => s.Id, subject.Id),
@@ -406,7 +439,11 @@ public static class DbSeeder
 
         // 6. Seed Students
         var studentCount = await context.Users.CountDocumentsAsync(u => u.Role == "Student" && u.Email != "student@school.com");
-        var studentFilePath = ResolveFilePath("student.json");
+        var studentFilePath = ResolveFilePath("teacher.json"); // Using standard ResolveFilePath
+        if (!File.Exists(studentFilePath))
+        {
+            studentFilePath = ResolveFilePath("student.json");
+        }
         if (!File.Exists(studentFilePath))
         {
             studentFilePath = ResolveFilePath("students.json");

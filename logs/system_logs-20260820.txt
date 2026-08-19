@@ -1,0 +1,221 @@
+04:12:07-20-Aug-2026-----server-online-----id:system_kernel
+04:12:07-20-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+04:12:07-20-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+04:12:07-20-Aug-2026-----Now listening on: http://localhost:5000
+04:12:07-20-Aug-2026-----Application started. Press Ctrl+C to shut down.
+04:12:07-20-Aug-2026-----Hosting environment: Development
+04:12:07-20-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+04:12:08-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:12:08-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 344.6725ms
+04:12:08-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:12:08-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 3.1529ms
+04:12:09-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:12:09-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 131.7265ms
+04:14:15-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Public/directory/subjects-with-teachers/6a84b93f6a5cf0c5bf7f013c - null null
+04:14:15-20-Aug-2026-----Failed to determine the https port for redirect.
+04:14:18-20-Aug-2026-----Executing endpoint 'backend.Controllers.PublicController.GetSubjectsWithTeachers (backend)'
+04:14:18-20-Aug-2026-----Route matched with {action = "GetSubjectsWithTeachers", controller = "Public"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetSubjectsWithTeachers(System.String) on controller backend.Controllers.PublicController (backend).
+04:14:18-20-Aug-2026-----Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[<>f__AnonymousType25`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[<>f__AnonymousType24`3[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+04:14:18-20-Aug-2026-----Executed action backend.Controllers.PublicController.GetSubjectsWithTeachers (backend) in 354.4741ms
+04:14:18-20-Aug-2026-----Executed endpoint 'backend.Controllers.PublicController.GetSubjectsWithTeachers (backend)'
+04:14:18-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Public/directory/subjects-with-teachers/6a84b93f6a5cf0c5bf7f013c - 200 null application/json; charset=utf-8 3254.1357ms
+04:14:59-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Public/directory/courses?version=bangla&level=primary&page=1&pageSize=12 - null null
+04:14:59-20-Aug-2026-----Executing endpoint 'backend.Controllers.PublicController.GetCoursesForAdventure (backend)'
+04:14:59-20-Aug-2026-----Route matched with {action = "GetCoursesForAdventure", controller = "Public"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetCoursesForAdventure(System.String, System.String, Int32, Int32) on controller backend.Controllers.PublicController (backend).
+04:15:00-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType23`4[[System.Collections.Generic.List`1[[backend.Models.Course, backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:15:00-20-Aug-2026-----Executed action backend.Controllers.PublicController.GetCoursesForAdventure (backend) in 594.8124ms
+04:15:00-20-Aug-2026-----Executed endpoint 'backend.Controllers.PublicController.GetCoursesForAdventure (backend)'
+04:15:00-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Public/directory/courses?version=bangla&level=primary&page=1&pageSize=12 - 200 null application/json; charset=utf-8 621.3981ms
+04:15:21-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Public/directory/subjects-with-teachers/6a84b93f6a5cf0c5bf7f0116 - null null
+04:15:21-20-Aug-2026-----Executing endpoint 'backend.Controllers.PublicController.GetSubjectsWithTeachers (backend)'
+04:15:21-20-Aug-2026-----Route matched with {action = "GetSubjectsWithTeachers", controller = "Public"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetSubjectsWithTeachers(System.String) on controller backend.Controllers.PublicController (backend).
+04:15:21-20-Aug-2026-----Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[<>f__AnonymousType25`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[<>f__AnonymousType24`3[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+04:15:21-20-Aug-2026-----Executed action backend.Controllers.PublicController.GetSubjectsWithTeachers (backend) in 114.3802ms
+04:15:21-20-Aug-2026-----Executed endpoint 'backend.Controllers.PublicController.GetSubjectsWithTeachers (backend)'
+04:15:21-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Public/directory/subjects-with-teachers/6a84b93f6a5cf0c5bf7f0116 - 200 null application/json; charset=utf-8 117.8492ms
+04:16:23-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Public/subjects-by-course/6a84b93f6a5cf0c5bf7f0116 - null null
+04:16:23-20-Aug-2026-----Executing endpoint 'backend.Controllers.PublicController.GetSubjectsByCourse (backend)'
+04:16:23-20-Aug-2026-----Route matched with {action = "GetSubjectsByCourse", controller = "Public"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetSubjectsByCourse(System.String) on controller backend.Controllers.PublicController (backend).
+04:16:23-20-Aug-2026-----Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[backend.Models.Subject, backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+04:16:23-20-Aug-2026-----Executed action backend.Controllers.PublicController.GetSubjectsByCourse (backend) in 59.6885ms
+04:16:23-20-Aug-2026-----Executed endpoint 'backend.Controllers.PublicController.GetSubjectsByCourse (backend)'
+04:16:23-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Public/subjects-by-course/6a84b93f6a5cf0c5bf7f0116 - 200 null application/json; charset=utf-8 64.0034ms
+04:16:57-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/me - null null
+04:16:57-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetMyProfile (backend)'
+04:16:57-20-Aug-2026-----Route matched with {action = "GetMyProfile", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller backend.Controllers.TeacherController (backend).
+04:16:57-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType29`7[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:16:57-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetMyProfile (backend) in 125.3455ms
+04:16:57-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetMyProfile (backend)'
+04:16:57-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/me - 200 null application/json; charset=utf-8 135.6645ms
+04:17:37-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/my-colleagues?page=1&pageSize=10 - null null
+04:17:37-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetMyColleagues (backend)'
+04:17:37-20-Aug-2026-----Route matched with {action = "GetMyColleagues", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyColleagues(Int32, Int32) on controller backend.Controllers.TeacherController (backend).
+04:17:38-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType23`4[[System.Collections.Generic.List`1[[User, backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:17:38-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetMyColleagues (backend) in 241.4469ms
+04:17:38-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetMyColleagues (backend)'
+04:17:38-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/my-colleagues?page=1&pageSize=10 - 200 null application/json; charset=utf-8 311.0114ms
+04:18:29-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/students-by-class/6a84b93f6a5cf0c5bf7f0116 - null null
+04:18:29-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetStudentsByClass (backend)'
+04:18:29-20-Aug-2026-----Route matched with {action = "GetStudentsByClass", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetStudentsByClass(System.String) on controller backend.Controllers.TeacherController (backend).
+04:18:29-20-Aug-2026-----Executing ForbidResult with authentication schemes ([]).
+04:18:29-20-Aug-2026-----AuthenticationScheme: Bearer was forbidden.
+04:18:29-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetStudentsByClass (backend) in 119.6245ms
+04:18:29-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetStudentsByClass (backend)'
+04:18:29-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/students-by-class/6a84b93f6a5cf0c5bf7f0116 - 403 0 null 131.5766ms
+04:27:16-20-Aug-2026-----server-online-----id:system_kernel
+04:27:16-20-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+04:27:16-20-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+04:27:16-20-Aug-2026-----Now listening on: http://localhost:5000
+04:27:16-20-Aug-2026-----Application started. Press Ctrl+C to shut down.
+04:27:16-20-Aug-2026-----Hosting environment: Development
+04:27:16-20-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+04:27:16-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:27:16-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 172.0176ms
+04:27:16-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:27:16-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 2.4075ms
+04:27:17-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:27:17-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 147.0526ms
+04:27:27-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:27:27-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 3.2023ms
+04:27:27-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:27:27-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 0.6329ms
+04:27:27-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:27:27-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 32.4471ms
+04:28:11-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/me - null null
+04:28:11-20-Aug-2026-----Failed to determine the https port for redirect.
+04:28:12-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetMyProfile (backend)'
+04:28:12-20-Aug-2026-----Route matched with {action = "GetMyProfile", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller backend.Controllers.TeacherController (backend).
+04:28:12-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType28`7[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:28:12-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetMyProfile (backend) in 226.3752ms
+04:28:12-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetMyProfile (backend)'
+04:28:12-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/me - 200 null application/json; charset=utf-8 341.3152ms
+04:40:33-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:40:33-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 1.0926ms
+04:40:33-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:40:33-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 3.2385ms
+04:40:33-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:40:33-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 39.2566ms
+04:40:36-20-Aug-2026-----Application is shutting down...
+04:43:50-20-Aug-2026-----Demo Admin credentials verified.
+04:43:50-20-Aug-2026-----Loaded teachers successfully from teacher.json
+04:44:19-20-Aug-2026-----Teachers mapped to Subjects successfully.
+04:44:19-20-Aug-2026-----Loaded students successfully from student.json
+04:45:48-20-Aug-2026-----Successfully seeded 441 students.
+04:45:48-20-Aug-2026-----server-online-----id:system_kernel
+04:45:48-20-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+04:45:48-20-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+04:45:48-20-Aug-2026-----Now listening on: http://localhost:5000
+04:45:48-20-Aug-2026-----Application started. Press Ctrl+C to shut down.
+04:45:48-20-Aug-2026-----Hosting environment: Development
+04:45:48-20-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+04:45:49-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:45:49-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 195.2787ms
+04:45:49-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:45:49-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 5.1258ms
+04:45:49-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:45:50-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 198.6624ms
+04:47:53-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/me - null null
+04:47:53-20-Aug-2026-----Failed to determine the https port for redirect.
+04:47:53-20-Aug-2026-----Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '19-Aug-26 10:45:25 PM', Current time (UTC): '19-Aug-26 10:47:53 PM'.
+   at Microsoft.IdentityModel.Tokens.ValidatorUtilities.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+04:47:53-20-Aug-2026-----Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '19-Aug-26 10:45:25 PM', Current time (UTC): '19-Aug-26 10:47:53 PM'.
+04:47:53-20-Aug-2026-----Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Teacher)
+04:47:53-20-Aug-2026-----AuthenticationScheme: Bearer was challenged.
+04:47:53-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/me - 401 0 null 481.8203ms
+04:48:39-20-Aug-2026-----Request starting HTTP/1.1 POST http://localhost:5000/api/Auth/login - application/json 67
+04:48:39-20-Aug-2026-----CORS policy execution failed.
+04:48:39-20-Aug-2026-----Request origin http://localhost:5000 does not have permission to access the resource.
+04:48:39-20-Aug-2026-----Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '19-Aug-26 10:45:25 PM', Current time (UTC): '19-Aug-26 10:48:39 PM'.
+   at Microsoft.IdentityModel.Tokens.ValidatorUtilities.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+04:48:39-20-Aug-2026-----Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '19-Aug-26 10:45:25 PM', Current time (UTC): '19-Aug-26 10:48:39 PM'.
+04:48:39-20-Aug-2026-----Executing endpoint 'backend.Controllers.AuthController.Login (backend)'
+04:48:39-20-Aug-2026-----Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(backend.DTOs.LoginDto) on controller backend.Controllers.AuthController (backend).
+04:48:39-20-Aug-2026-----user-login-success-----id:6a8631b1a702d3681fd7aada-----type:Teacher
+04:48:39-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType13`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType14`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+04:48:39-20-Aug-2026-----Executed action backend.Controllers.AuthController.Login (backend) in 365.7717ms
+04:48:39-20-Aug-2026-----Executed endpoint 'backend.Controllers.AuthController.Login (backend)'
+04:48:39-20-Aug-2026-----Request finished HTTP/1.1 POST http://localhost:5000/api/Auth/login - 200 null application/json; charset=utf-8 415.5506ms
+04:49:22-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/me - null null
+04:49:22-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetMyProfile (backend)'
+04:49:22-20-Aug-2026-----Route matched with {action = "GetMyProfile", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller backend.Controllers.TeacherController (backend).
+04:49:22-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType28`7[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:49:22-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetMyProfile (backend) in 110.1184ms
+04:49:22-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetMyProfile (backend)'
+04:49:22-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/me - 200 null application/json; charset=utf-8 167.4285ms
+04:50:14-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/my-colleagues?page=1&pageSize=10 - null null
+04:50:14-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetMyColleagues (backend)'
+04:50:15-20-Aug-2026-----Route matched with {action = "GetMyColleagues", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyColleagues(Int32, Int32) on controller backend.Controllers.TeacherController (backend).
+04:50:15-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType23`4[[System.Collections.Generic.List`1[[User, backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:50:15-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetMyColleagues (backend) in 205.8499ms
+04:50:15-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetMyColleagues (backend)'
+04:50:15-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/my-colleagues?page=1&pageSize=10 - 200 null application/json; charset=utf-8 226.4479ms
+04:54:06-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:54:06-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 5.9785ms
+04:54:06-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:54:06-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 0.5814ms
+04:54:07-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:54:07-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 79.2746ms
+04:54:42-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/my-colleagues?page=1&pageSize=10 - null null
+04:54:42-20-Aug-2026-----Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Teacher)
+04:54:42-20-Aug-2026-----AuthenticationScheme: Bearer was challenged.
+04:54:42-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/my-colleagues?page=1&pageSize=10 - 401 0 null 1.3998ms
+04:55:14-20-Aug-2026-----Application is shutting down...
+04:55:28-20-Aug-2026-----server-online-----id:system_kernel
+04:55:28-20-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+04:55:28-20-Aug-2026-----The WebRootPath was not found: F:\Job Apply\project\onno-rokom\backend\wwwroot. Static files may be unavailable.
+04:55:28-20-Aug-2026-----Now listening on: http://localhost:5000
+04:55:28-20-Aug-2026-----Application started. Press Ctrl+C to shut down.
+04:55:28-20-Aug-2026-----Hosting environment: Development
+04:55:28-20-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+04:55:29-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:55:29-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 145.9964ms
+04:55:29-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:55:29-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 4.1752ms
+04:55:29-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:55:29-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 149.882ms
+04:55:54-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/me - null null
+04:55:54-20-Aug-2026-----Failed to determine the https port for redirect.
+04:55:54-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetMyProfile (backend)'
+04:55:55-20-Aug-2026-----Route matched with {action = "GetMyProfile", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller backend.Controllers.TeacherController (backend).
+04:55:55-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType28`7[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:55:55-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetMyProfile (backend) in 160.7463ms
+04:55:55-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetMyProfile (backend)'
+04:55:55-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/me - 200 null application/json; charset=utf-8 282.7449ms
+04:56:07-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/my-colleagues?page=1&pageSize=10 - null null
+04:56:07-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetMyColleagues (backend)'
+04:56:07-20-Aug-2026-----Route matched with {action = "GetMyColleagues", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyColleagues(Int32, Int32) on controller backend.Controllers.TeacherController (backend).
+04:56:07-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType23`4[[System.Collections.Generic.List`1[[User, backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:56:07-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetMyColleagues (backend) in 335.8321ms
+04:56:07-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetMyColleagues (backend)'
+04:56:07-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/my-colleagues?page=1&pageSize=10 - 200 null application/json; charset=utf-8 411.5689ms
+04:56:52-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/my-subjects?page=1&pageSize=10 - null null
+04:56:52-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetMySubjects (backend)'
+04:56:52-20-Aug-2026-----Route matched with {action = "GetMySubjects", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMySubjects(Int32, Int32) on controller backend.Controllers.TeacherController (backend).
+04:56:52-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType23`4[[System.Collections.Generic.List`1[[<>f__AnonymousType29`6[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:56:52-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetMySubjects (backend) in 334.0224ms
+04:56:52-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetMySubjects (backend)'
+04:56:52-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/my-subjects?page=1&pageSize=10 - 200 null application/json; charset=utf-8 346.4462ms
+04:57:52-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/stats - null null
+04:57:52-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetTeacherStats (backend)'
+04:57:52-20-Aug-2026-----Route matched with {action = "GetTeacherStats", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetTeacherStats() on controller backend.Controllers.TeacherController (backend).
+04:57:52-20-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType26`4[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType27`4[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+04:57:52-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetTeacherStats (backend) in 200.997ms
+04:57:52-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetTeacherStats (backend)'
+04:57:52-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/stats - 200 null application/json; charset=utf-8 206.1666ms
+04:58:48-20-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/students-by-subject/6a8631a4a702d3681fd7a9d1 - null null
+04:58:48-20-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetStudentsBySubject (backend)'
+04:58:48-20-Aug-2026-----Route matched with {action = "GetStudentsBySubject", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetStudentsBySubject(System.String) on controller backend.Controllers.TeacherController (backend).
+04:58:48-20-Aug-2026-----Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[User, backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+04:58:48-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetStudentsBySubject (backend) in 93.3556ms
+04:58:48-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetStudentsBySubject (backend)'
+04:58:48-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/students-by-subject/6a8631a4a702d3681fd7a9d1 - 200 null application/json; charset=utf-8 99.8715ms
