@@ -3,6 +3,7 @@ using backend.DTOs;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog;
 using System;
@@ -25,7 +26,453 @@ public class AdminController : ControllerBase
     }
 
     // ==========================================
-    // 1. COURSE MANAGEMENT
+    // UNIFIED SEARCH ENGINE ENDPOINT
+    // ==========================================
+
+    [HttpGet("users/search-engine")]
+    public async Task<IActionResult> UserSearchEngine(
+        [FromQuery] string? id,
+        [FromQuery] string? name,
+        [FromQuery] string? role,
+        [FromQuery] string? course,
+        [FromQuery] string? specialty,
+        [FromQuery] string? search,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+
+        var filterBuilder = Builders<User>.Filter;
+        var queryFilters = new List<FilterDefinition<User>>();
+
+        // 1. Filter by exact ID
+        if (!string.IsNullOrEmpty(id))
+        {
+            queryFilters.Add(filterBuilder.Eq(u => u.Id, id));
+        }
+
+        // 2. Filter by Specific Name (case-insensitive)
+        if (!string.IsNullOrEmpty(name))
+        {
+            queryFilters.Add(filterBuilder.Regex(u => u.Name, new BsonRegularExpression(name, "i")));
+        }
+
+        // 3. Filter by Role (Admin, Teacher, Student)
+        if (!string.IsNullOrEmpty(role))
+        {
+            queryFilters.Add(filterBuilder.Eq(u => u.Role, role));
+        }
+
+        // 4. Filter by Course (accepts CourseId or Course Name string)
+        if (!string.IsNullOrEmpty(course))
+        {
+            if (ObjectId.TryParse(course, out _))
+            {
+                queryFilters.Add(filterBuilder.Eq(u => u.CourseId, course));
+            }
+            else
+            {
+                // Find matching course records first to retrieve their IDs
+                var matchingCourses = await _context.Courses
+                    .Find(c => c.Name != null && c.Name.ToLower().Contains(course.ToLower()))
+                    .ToListAsync();
+                
+                var courseIds = matchingCourses.Select(c => c.Id).ToList();
+                queryFilters.Add(filterBuilder.In(u => u.CourseId, courseIds));
+            }
+        }
+
+        // 5. Filter by Teacher Specialty (case-insensitive substring match in specialties array)
+        if (!string.IsNullOrEmpty(specialty))
+        {
+            var specialtyRegex = new BsonRegularExpression(specialty, "i");
+            queryFilters.Add(filterBuilder.Regex("specialties", specialtyRegex));
+        }
+
+        // 6. General Search Query (matches either Name or Email case-insensitively)
+        if (!string.IsNullOrEmpty(search))
+        {
+            var generalRegex = new BsonRegularExpression(search, "i");
+            queryFilters.Add(filterBuilder.Or(
+                filterBuilder.Regex(u => u.Name, generalRegex),
+                filterBuilder.Regex(u => u.Email, generalRegex)
+            ));
+        }
+
+        var finalFilter = queryFilters.Count > 0 ? filterBuilder.And(queryFilters) : filterBuilder.Empty;
+        var totalCount = await _context.Users.CountDocumentsAsync(finalFilter);
+
+        var users = await _context.Users.Find(finalFilter)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        // Retrieve and map courses to display friendly names in search results
+        var allCourses = await _context.Courses.Find(Builders<Course>.Filter.Empty).ToListAsync();
+        var courseMap = allCourses.Where(c => c.Id != null).ToDictionary(c => c.Id!, c => c);
+
+        var formattedData = users.Select(u => new
+        {
+            id = u.Id,
+            name = u.Name,
+            email = u.Email,
+            role = u.Role,
+            specialties = u.Specialties,
+            versions = u.Versions,
+            levels = u.Levels,
+            courseId = u.CourseId,
+            courseName = u.CourseId != null && courseMap.TryGetValue(u.CourseId!, out var mappedCourse) ? mappedCourse.Name : null,
+            courseNameBn = u.CourseId != null && courseMap.TryGetValue(u.CourseId!, out var mappedCourseBn) ? mappedCourseBn.NameBn : null
+        }).ToList();
+
+        return Ok(new
+        {
+            data = formattedData,
+            totalCount,
+            page,
+            totalPage = (int)Math.Ceiling((double)totalCount / pageSize)
+        });
+    }
+
+    // ==========================================
+    // PAGINATED EXTENDED API ENDPOINTS
+    // ==========================================
+
+    [HttpGet("getSubjects/{version}/{courseIdOrName}")]
+    public async Task<IActionResult> GetSubjectsByVersionAndCourse(
+        [FromRoute] string version,
+        [FromRoute] string courseIdOrName,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+
+        // Normalize version identification
+        string normVersion = version.Equals("BV", StringComparison.OrdinalIgnoreCase) || 
+                             version.Contains("Bangla", StringComparison.OrdinalIgnoreCase) 
+                             ? "Bangla" : "English";
+
+        var courseFilterBuilder = Builders<Course>.Filter;
+        FilterDefinition<Course> courseFilter;
+
+        // Determine if target course is lookup by ID or lookup by Name
+        if (ObjectId.TryParse(courseIdOrName, out _))
+        {
+            courseFilter = courseFilterBuilder.And(
+                courseFilterBuilder.Eq(c => c.Id, courseIdOrName),
+                courseFilterBuilder.Eq(c => c.Version, normVersion)
+            );
+        }
+        else if (courseIdOrName.Equals("all", StringComparison.OrdinalIgnoreCase))
+        {
+            courseFilter = courseFilterBuilder.Eq(c => c.Version, normVersion);
+        }
+        else
+        {
+            courseFilter = courseFilterBuilder.And(
+                courseFilterBuilder.Regex(c => c.Name, new BsonRegularExpression(courseIdOrName, "i")),
+                courseFilterBuilder.Eq(c => c.Version, normVersion)
+            );
+        }
+
+        var courses = await _context.Courses.Find(courseFilter).ToListAsync();
+        var courseIds = courses.Select(c => c.Id).ToList();
+
+        var subjectsFilter = Builders<Subject>.Filter.In(s => s.CourseId, courseIds);
+        var totalSubjectsCount = await _context.Subjects.CountDocumentsAsync(subjectsFilter);
+
+        var subjects = await _context.Subjects.Find(subjectsFilter)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        // Calculate student counts per course efficiently
+        var studentCounts = await _context.Users.Aggregate()
+            .Match(u => u.Role == Role.Student && u.CourseId != null && courseIds.Contains(u.CourseId))
+            .Group(u => u.CourseId, g => new { CourseId = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        // Filter and cast keys to non-nullable strings to resolve nullability warnings
+        var studentCountMap = studentCounts
+            .Where(x => x.CourseId != null)
+            .ToDictionary(x => x.CourseId!, x => x.Count);
+
+        var data = subjects.Select(s => new
+        {
+            id = s.Id,
+            name = s.Name,
+            nameBn = s.NameBn,
+            version = normVersion,
+            studentCount = studentCountMap.TryGetValue(s.CourseId, out var count) ? count : 0
+        }).ToList();
+
+        var totalCourse = await _context.Courses.CountDocumentsAsync(Builders<Course>.Filter.Empty);
+        var totalVersionCourse = await _context.Courses.CountDocumentsAsync(Builders<Course>.Filter.Eq(c => c.Version, normVersion));
+        var totalPage = (int)Math.Ceiling((double)totalSubjectsCount / pageSize);
+
+        return Ok(new
+        {
+            data,
+            page,
+            totalPage,
+            totalVersionCourse,
+            totalCourse
+        });
+    }
+
+    [HttpGet("getCourses/{version}/{level}")]
+    public async Task<IActionResult> GetCoursesByVersionAndLevel(
+        [FromRoute] string version,
+        [FromRoute] string level,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+
+        // Normalize version identification
+        string normVersion = version.Equals("BV", StringComparison.OrdinalIgnoreCase) || 
+                             version.Contains("Bangla", StringComparison.OrdinalIgnoreCase) 
+                             ? "Bangla" : "English";
+
+        var courseFilterBuilder = Builders<Course>.Filter;
+        var filters = new List<FilterDefinition<Course>>
+        {
+            courseFilterBuilder.Eq(c => c.Version, normVersion)
+        };
+
+        if (!level.Equals("all", StringComparison.OrdinalIgnoreCase))
+        {
+            filters.Add(courseFilterBuilder.Regex(c => c.Level, new BsonRegularExpression($"^{level}$", "i")));
+        }
+
+        var courseFilter = courseFilterBuilder.And(filters);
+        var totalCoursesForFilter = await _context.Courses.CountDocumentsAsync(courseFilter);
+
+        var courses = await _context.Courses.Find(courseFilter)
+            .SortBy(c => c.Order)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        var courseIds = courses.Select(c => c.Id).ToList();
+
+        // Calculate student counts dynamically for these courses
+        var studentCounts = await _context.Users.Aggregate()
+            .Match(u => u.Role == Role.Student && u.CourseId != null && courseIds.Contains(u.CourseId))
+            .Group(u => u.CourseId, g => new { CourseId = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        // Filter and cast keys to non-nullable strings to resolve nullability warnings
+        var studentCountMap = studentCounts
+            .Where(x => x.CourseId != null)
+            .ToDictionary(x => x.CourseId!, x => x.Count);
+
+        var data = courses.Select(c => new
+        {
+            id = c.Id,
+            order = c.Order,
+            name = c.Name,
+            nameBn = c.NameBn,
+            version = normVersion,
+            studentCount = studentCountMap.TryGetValue(c.Id!, out var count) ? count : 0
+        }).ToList();
+
+        var totalCourse = await _context.Courses.CountDocumentsAsync(Builders<Course>.Filter.Empty);
+        var totalVersionCourse = await _context.Courses.CountDocumentsAsync(Builders<Course>.Filter.Eq(c => c.Version, normVersion));
+        var totalPage = (int)Math.Ceiling((double)totalCoursesForFilter / pageSize);
+
+        return Ok(new
+        {
+            data,
+            page,
+            totalPage,
+            totalVersionCourse,
+            totalCourse
+        });
+    }
+
+    [HttpGet("students/paginated")]
+    public async Task<IActionResult> GetStudentsPaginated(
+        [FromQuery] string? courseId,
+        [FromQuery] string? version,
+        [FromQuery] string? search,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+
+        var filterBuilder = Builders<User>.Filter;
+        var studentFilters = new List<FilterDefinition<User>>
+        {
+            filterBuilder.Eq(u => u.Role, Role.Student)
+        };
+
+        if (!string.IsNullOrEmpty(courseId))
+        {
+            studentFilters.Add(filterBuilder.Eq(u => u.CourseId, courseId));
+        }
+
+        if (!string.IsNullOrEmpty(version))
+        {
+            string normVersion = version.Equals("BV", StringComparison.OrdinalIgnoreCase) || 
+                                 version.Contains("Bangla", StringComparison.OrdinalIgnoreCase) 
+                                 ? "Bangla" : "English";
+
+            var coursesOfVersion = await _context.Courses.Find(c => c.Version == normVersion).ToListAsync();
+            var courseIds = coursesOfVersion.Select(c => c.Id).ToList();
+            studentFilters.Add(filterBuilder.In(u => u.CourseId, courseIds));
+        }
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            var searchRegex = new BsonRegularExpression(search, "i");
+            studentFilters.Add(filterBuilder.Or(
+                filterBuilder.Regex(u => u.Name, searchRegex),
+                filterBuilder.Regex(u => u.Email, searchRegex)
+            ));
+        }
+
+        var finalFilter = filterBuilder.And(studentFilters);
+        var totalCount = await _context.Users.CountDocumentsAsync(finalFilter);
+
+        var students = await _context.Users.Find(finalFilter)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        return Ok(new
+        {
+            data = students,
+            totalCount,
+            page,
+            totalPage = (int)Math.Ceiling((double)totalCount / pageSize)
+        });
+    }
+
+    [HttpGet("teachers/paginated")]
+    public async Task<IActionResult> GetTeachersPaginated(
+        [FromQuery] string? specialty,
+        [FromQuery] string? version,
+        [FromQuery] string? level,
+        [FromQuery] string? subjectId,
+        [FromQuery] string? search,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+
+        var filterBuilder = Builders<User>.Filter;
+        var teachersFilters = new List<FilterDefinition<User>>
+        {
+            filterBuilder.Eq(u => u.Role, Role.Teacher)
+        };
+
+        // Substring case-insensitive matches against array elements inside Document fields
+        if (!string.IsNullOrEmpty(specialty))
+        {
+            var regex = new BsonRegularExpression(specialty, "i");
+            teachersFilters.Add(filterBuilder.Regex("specialties", regex));
+        }
+
+        if (!string.IsNullOrEmpty(version))
+        {
+            var regex = new BsonRegularExpression(version, "i");
+            teachersFilters.Add(filterBuilder.Regex("versions", regex));
+        }
+
+        if (!string.IsNullOrEmpty(level))
+        {
+            var regex = new BsonRegularExpression(level, "i");
+            teachersFilters.Add(filterBuilder.Regex("levels", regex));
+        }
+
+        if (!string.IsNullOrEmpty(subjectId))
+        {
+            var subject = await _context.Subjects.Find(s => s.Id == subjectId).FirstOrDefaultAsync();
+            if (subject != null && subject.TeacherIds != null)
+            {
+                teachersFilters.Add(filterBuilder.In(u => u.Id, subject.TeacherIds));
+            }
+            else
+            {
+                teachersFilters.Add(filterBuilder.Eq(u => u.Id, "none_matching_marker_value"));
+            }
+        }
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            var searchRegex = new BsonRegularExpression(search, "i");
+            teachersFilters.Add(filterBuilder.Or(
+                filterBuilder.Regex(u => u.Name, searchRegex),
+                filterBuilder.Regex(u => u.Email, searchRegex)
+            ));
+        }
+
+        var finalFilter = filterBuilder.And(teachersFilters);
+        var totalCount = await _context.Users.CountDocumentsAsync(finalFilter);
+
+        var teachers = await _context.Users.Find(finalFilter)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        return Ok(new
+        {
+            data = teachers,
+            totalCount,
+            page,
+            totalPage = (int)Math.Ceiling((double)totalCount / pageSize)
+        });
+    }
+
+    [HttpGet("admins/paginated")]
+    public async Task<IActionResult> GetAdminsPaginated(
+        [FromQuery] string? search,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+
+        var filterBuilder = Builders<User>.Filter;
+        var adminFilters = new List<FilterDefinition<User>>
+        {
+            filterBuilder.Eq(u => u.Role, Role.Admin)
+        };
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            var searchRegex = new BsonRegularExpression(search, "i");
+            adminFilters.Add(filterBuilder.Or(
+                filterBuilder.Regex(u => u.Name, searchRegex),
+                filterBuilder.Regex(u => u.Email, searchRegex)
+            ));
+        }
+
+        var finalFilter = filterBuilder.And(adminFilters);
+        var totalCount = await _context.Users.CountDocumentsAsync(finalFilter);
+
+        var admins = await _context.Users.Find(finalFilter)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        return Ok(new
+        {
+            data = admins,
+            totalCount,
+            page,
+            totalPage = (int)Math.Ceiling((double)totalCount / pageSize)
+        });
+    }
+
+    // ==========================================
+    // EXISTING COURSE MANAGEMENT ENDPOINTS
     // ==========================================
 
     [HttpPost("courses")]
@@ -111,7 +558,7 @@ public class AdminController : ControllerBase
     }
 
     // ==========================================
-    // 2. SUBJECT MANAGEMENT
+    // EXISTING SUBJECT MANAGEMENT ENDPOINTS
     // ==========================================
 
     [HttpPost("subjects")]
@@ -205,7 +652,7 @@ public class AdminController : ControllerBase
     }
 
     // ==========================================
-    // 3. USER MANAGEMENT (Admin, Teacher, Student)
+    // EXISTING USER MANAGEMENT (Admin, Teacher, Student)
     // ==========================================
 
     [HttpPost("users")]
@@ -321,7 +768,7 @@ public class AdminController : ControllerBase
     }
 
     // ==========================================
-    // 4. TEACHER ALLOCATION & AVAILABILITY
+    // EXISTING TEACHER ALLOCATION & AVAILABILITY
     // ==========================================
 
     [HttpPost("assign-teacher")]
@@ -432,7 +879,7 @@ public class AdminController : ControllerBase
     }
 
     // ==========================================
-    // 5. DATABASE METRICS & STATS
+    // EXISTING DATABASE METRICS & STATS
     // ==========================================
 
     [HttpGet("stats")]
