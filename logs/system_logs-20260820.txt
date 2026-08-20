@@ -219,3 +219,4 @@ RolesAuthorizationRequirement:User.IsInRole must be true for one of the followin
 04:58:48-20-Aug-2026-----Executed action backend.Controllers.TeacherController.GetStudentsBySubject (backend) in 93.3556ms
 04:58:48-20-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetStudentsBySubject (backend)'
 04:58:48-20-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/students-by-subject/6a8631a4a702d3681fd7a9d1 - 200 null application/json; charset=utf-8 99.8715ms
+05:02:27-20-Aug-2026-----Application is shutting down...

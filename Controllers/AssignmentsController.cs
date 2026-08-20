@@ -3,6 +3,7 @@ using backend.DTOs;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson; // Added to resolve CS0103
 using MongoDB.Driver;
 using Serilog;
 using System.Security.Claims;
@@ -21,12 +22,11 @@ public class AssignmentsController : ControllerBase
         _context = context;
     }
 
-    // 1. Create an Assignment (Teacher Only)
+    // 1. Create an Assignment (Teacher Only - Restricting strictly to subjects they teach)
     [HttpPost]
     [Authorize(Roles = Role.Teacher)]
     public async Task<IActionResult> CreateAssignment([FromBody] CreateAssignmentDto dto)
     {
-        // Get Teacher ID from JWT claims
         var teacherId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(teacherId)) return Unauthorized();
 
@@ -35,6 +35,22 @@ public class AssignmentsController : ControllerBase
         if (subject == null)
         {
             return BadRequest(new { message = "Subject not found" });
+        }
+
+        // SECURITY CHECK: Ensure the teacher is actually assigned to teach this subject
+        var hasValidObjectId = ObjectId.TryParse(teacherId, out var objId);
+        var subjectFilter = Builders<Subject>.Filter.And(
+            Builders<Subject>.Filter.Eq(s => s.Id, dto.SubjectId),
+            Builders<Subject>.Filter.Or(
+                Builders<Subject>.Filter.AnyEq("teacherIds", teacherId),
+                Builders<Subject>.Filter.AnyEq("teacherIds", hasValidObjectId ? objId : ObjectId.Empty)
+            )
+        );
+
+        var isTeacherAssigned = await _context.Subjects.Find(subjectFilter).AnyAsync();
+        if (!isTeacherAssigned)
+        {
+            return Forbid(); // Blocks teachers from injecting assignments into other departments
         }
 
         var assignment = new Assignment
