@@ -1,6 +1,12 @@
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace backend.Controllers;
 
@@ -9,17 +15,13 @@ namespace backend.Controllers;
 [Authorize] // Requires users to be logged in to upload files
 public class UploadController : ControllerBase
 {
-    private readonly string _uploadsFolder;
+    private readonly Cloudinary _cloudinary;
 
     public UploadController()
     {
-        // Dynamically locate/create "wwwroot/uploads" relative to the running folder
-        _uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-        
-        if (!Directory.Exists(_uploadsFolder))
-        {
-            Directory.CreateDirectory(_uploadsFolder);
-        }
+        // The Cloudinary SDK automatically picks up the CLOUDINARY_URL 
+        // environment variable from your operating system or Render environment.
+        _cloudinary = new Cloudinary();
     }
 
     [HttpPost]
@@ -31,7 +33,7 @@ public class UploadController : ControllerBase
             return BadRequest(new { message = "No file uploaded or file is empty." });
         }
 
-        // Limit file size to 10MB to protect your local storage
+        // Limit file size to 10MB
         if (file.Length > 10 * 1024 * 1024)
         {
             return BadRequest(new { message = "File size exceeds the maximum limit of 10MB." });
@@ -45,25 +47,44 @@ public class UploadController : ControllerBase
             return BadRequest(new { message = "Unsupported file format. Allowed formats: PDF, PNG, JPG, DOCX, ZIP." });
         }
 
-        // Generate a completely unique filename to prevent overwriting existing files
-        var uniqueFileName = $"{Guid.NewGuid()}{extension}";
-        var filePath = Path.Combine(_uploadsFolder, uniqueFileName);
-
-        // Save the file asynchronously
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        try
         {
-            await file.CopyToAsync(stream);
+            using var stream = file.OpenReadStream();
+            
+            // RawUploadParams cleanly supports non-image assets (PDF, ZIP, DOCX) as well as images (PNG, JPG)
+            var uploadParams = new RawUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                PublicId = $"mulyayon_uploads/{Guid.NewGuid()}{extension}"
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+            if (uploadResult.Error != null)
+            {
+                return BadRequest(new { message = uploadResult.Error.Message });
+            }
+
+            // Secure HTTPS cloud URL
+            var secureUrl = uploadResult.SecureUrl.ToString();
+
+            // Log upload metadata securely with your existing Serilog metrics
+            Log.Information("file-upload-success-----id:{UserId}-----fname:{OriginalName}-----size:{Size}MB-----url:{Url}", 
+                User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
+                file.FileName,
+                Math.Round((double)file.Length / (1024 * 1024), 2),
+                secureUrl);
+
+            return Ok(new { url = secureUrl });
         }
+        catch (Exception ex)
+        {
+            Log.Error("file-upload-failed-----id:{UserId}-----fname:{OriginalName}-----error:{Error}",
+                User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
+                file.FileName,
+                ex.Message);
 
-        // Construct the public URL to return to the client
-        var request = HttpContext.Request;
-        var publicUrl = $"{request.Scheme}://{request.Host}/uploads/{uniqueFileName}";
-
-        Log.Information("file-upload-success-----id:{UserId}-----fname:{OriginalName}-----size:{Size}MB", 
-            User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
-            file.FileName,
-            Math.Round((double)file.Length / (1024 * 1024), 2));
-
-        return Ok(new { url = publicUrl });
+            return StatusCode(500, new { message = $"Cloud upload failed: {ex.Message}" });
+        }
     }
 }

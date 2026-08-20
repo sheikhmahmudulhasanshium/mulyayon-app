@@ -1,0 +1,12 @@
+04:04:48-21-Aug-2026-----server-online-----id:system_kernel
+04:04:48-21-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+04:04:48-21-Aug-2026-----Now listening on: http://localhost:5000
+04:04:48-21-Aug-2026-----Application started. Press Ctrl+C to shut down.
+04:04:48-21-Aug-2026-----Hosting environment: Development
+04:04:48-21-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+04:04:50-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:04:50-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 437.5253ms
+04:04:50-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:04:50-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 2.2625ms
+04:04:50-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:04:50-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 132.5921ms

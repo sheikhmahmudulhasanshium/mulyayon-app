@@ -75,7 +75,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Configure CORS (Allowed origins for local dev and production)
+// Configure CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -83,27 +83,22 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:3000", "https://mulyayon.vercel.app")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials(); // Allows cookies/tokens to pass safely
+              .AllowCredentials();
     });
 });
 
-// Configure Swagger with custom sorting and Auth locks
+// Configure Swagger
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "School API", Version = "v1" });
 
-    // Custom sort order: Force Auth controller to the top of the UI list
     options.OrderActionsBy(apiDesc =>
     {
         var controllerName = apiDesc.ActionDescriptor.RouteValues["controller"] ?? string.Empty;
-        
-        // Assign Auth controller a prefix value of "0" so it sorts first
         if (controllerName.Equals("Auth", StringComparison.OrdinalIgnoreCase))
         {
             return $"0_{controllerName}_{apiDesc.RelativePath}";
         }
-        
-        // Assign other controllers a prefix value of "1" to sort alphabetically below Auth
         return $"1_{controllerName}_{apiDesc.RelativePath}";
     });
 
@@ -144,40 +139,21 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Swagger enabled for all environments (including production on Render)
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "School API v1");
-    options.RoutePrefix = string.Empty; // Serves the Swagger UI page directly at the root URL (/)
+    options.RoutePrefix = string.Empty;
 });
 
-// Only redirect to HTTPS in local development. 
-// Render manages HTTPS termination before traffic reaches your container.
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-// Ensure the uploads directory exists safely
-var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-try
-{
-    if (!Directory.Exists(uploadsPath))
-    {
-        Directory.CreateDirectory(uploadsPath);
-    }
-}
-catch (Exception ex)
-{
-    Log.Error($"Could not create uploads directory: {ex.Message}");
-}
-
-// Use standard static files setup. Because the uploads folder is inside wwwroot,
-// it is automatically accessible under the /uploads route.
+// Serves fallback static content (like favicons or templates if present in wwwroot)
 app.UseStaticFiles(); 
 
-// CORS must execute before Rate Limiting
 app.UseCors("AllowFrontend"); 
 app.UseRateLimiter(); 
 
