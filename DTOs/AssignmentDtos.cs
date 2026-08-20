@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace backend.DTOs;
@@ -21,6 +22,9 @@ public class CreateAssignmentDto
     public string SubjectId { get; set; } = string.Empty;
 
     public bool IsPublished { get; set; } = false; // Default to draft
+
+    // FIXED: Added to receive the uploaded attachment link during creation
+    public string? AttachmentUrl { get; set; } 
 }
 
 public class UpdateAssignmentDto
@@ -30,4 +34,7 @@ public class UpdateAssignmentDto
     public DateTime? Deadline { get; set; }
     public double? MaxMarks { get; set; }
     public bool? IsPublished { get; set; }
+
+    // FIXED: Added to allow teachers to update or clear the worksheet link during editing
+    public string? AttachmentUrl { get; set; }
 }

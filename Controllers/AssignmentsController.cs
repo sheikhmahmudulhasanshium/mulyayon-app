@@ -3,7 +3,7 @@ using backend.DTOs;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson; // Added to resolve CS0103
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog;
 using System.Security.Claims;
@@ -61,7 +61,8 @@ public class AssignmentsController : ControllerBase
             MaxMarks = dto.MaxMarks,
             IsPublished = dto.IsPublished,
             SubjectId = dto.SubjectId,
-            TeacherId = teacherId
+            TeacherId = teacherId,
+            AttachmentUrl = dto.AttachmentUrl // Mapped!
         };
 
         await _context.Assignments.InsertOneAsync(assignment);
@@ -89,6 +90,7 @@ public class AssignmentsController : ControllerBase
                 .Project(s => s.Id)
                 .ToListAsync();
 
+            // FIXED: Reverted to correct collection-level typed containment query
             var assignments = await _context.Assignments
                 .Find(a => a.IsPublished && subjectIds.Contains(a.SubjectId))
                 .ToListAsync();
@@ -152,6 +154,12 @@ public class AssignmentsController : ControllerBase
         if (dto.MaxMarks.HasValue) updates.Add(updateBuilder.Set(a => a.MaxMarks, dto.MaxMarks.Value));
         if (dto.IsPublished.HasValue) updates.Add(updateBuilder.Set(a => a.IsPublished, dto.IsPublished.Value));
         if (dto.Deadline.HasValue) updates.Add(updateBuilder.Set(a => a.Deadline, dto.Deadline.Value.ToUniversalTime()));
+        
+        // Allow updating or clearing attachment url from edit form
+        if (dto.AttachmentUrl != null)
+        {
+            updates.Add(updateBuilder.Set(a => a.AttachmentUrl, string.IsNullOrEmpty(dto.AttachmentUrl) ? null : dto.AttachmentUrl));
+        }
 
         if (updates.Count > 0)
         {
