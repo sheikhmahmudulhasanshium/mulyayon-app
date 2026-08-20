@@ -13,7 +13,9 @@ RUN dotnet publish -c Release -o /app/publish
 # 2. Use the runtime-only image to run the app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=build /app/publish .
+
+# FIXED: Change ownership of the published files to the non-root 'app' user
+COPY --from=build --chown=app:app /app/publish .
 
 # Bypasses Linux kernel inotify limits by switching file monitoring to polling (Fixes Render startup crash)
 ENV DOTNET_USE_POLLING_FILE_WATCHER=1

@@ -2,11 +2,8 @@ using backend.Data;
 using backend.Services;
 using backend.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.FileProviders; // Added for PhysicalFileProvider
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using System.IO;
 using System.Text;
 using System.Threading.RateLimiting;
 
@@ -155,22 +152,30 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty; // Serves the Swagger UI page directly at the root URL (/)
 });
 
-app.UseHttpsRedirection();
-
-// ==========================================
-// FIXED: Explicitly configure and host the uploads path
-// ==========================================
-var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-if (!Directory.Exists(uploadsPath))
+// Only redirect to HTTPS in local development. 
+// Render manages HTTPS termination before traffic reaches your container.
+if (app.Environment.IsDevelopment())
 {
-    Directory.CreateDirectory(uploadsPath);
+    app.UseHttpsRedirection();
 }
 
-app.UseStaticFiles(new StaticFileOptions
+// Ensure the uploads directory exists safely
+var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+try
 {
-    FileProvider = new PhysicalFileProvider(uploadsPath),
-    RequestPath = "/uploads"
-});
+    if (!Directory.Exists(uploadsPath))
+    {
+        Directory.CreateDirectory(uploadsPath);
+    }
+}
+catch (Exception ex)
+{
+    Log.Error($"Could not create uploads directory: {ex.Message}");
+}
+
+// Use standard static files setup. Because the uploads folder is inside wwwroot,
+// it is automatically accessible under the /uploads route.
+app.UseStaticFiles(); 
 
 // CORS must execute before Rate Limiting
 app.UseCors("AllowFrontend"); 
