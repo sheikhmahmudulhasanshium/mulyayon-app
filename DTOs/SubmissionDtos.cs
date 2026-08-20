@@ -7,16 +7,16 @@ public class SubmitAnswerDto
     [Required(ErrorMessage = "Assignment ID is required")]
     public string AssignmentId { get; set; } = string.Empty;
 
-    public string Answer { get; set; } = string.Empty; // Text-based written answer
+    public string Answer { get; set; } = string.Empty;
 
-    public string? AttachmentUrl { get; set; } // URL of the uploaded local file/image (Nullable)
+    public string? AttachmentUrl { get; set; }
 }
 
 public class UpdateSubmissionDto
 {
     public string Answer { get; set; } = string.Empty;
 
-    public string? AttachmentUrl { get; set; } // Optional new file update (Nullable)
+    public string? AttachmentUrl { get; set; }
 }
 
 public class GradeSubmissionDto
@@ -26,6 +26,7 @@ public class GradeSubmissionDto
 
     public string Feedback { get; set; } = string.Empty;
 
-    // Helper property to validate maximum marks range
     public double ContextMarks { get; set; }
+
+    public string? Status { get; set; } = "Graded"; 
 }

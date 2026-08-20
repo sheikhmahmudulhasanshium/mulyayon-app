@@ -9,6 +9,13 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Bridge configuration URL to system environment variables during local startup
+var cloudinaryUrl = builder.Configuration["CLOUDINARY_URL"];
+if (!string.IsNullOrEmpty(cloudinaryUrl))
+{
+    Environment.SetEnvironmentVariable("CLOUDINARY_URL", cloudinaryUrl);
+}
+
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -29,7 +36,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// Configure Built-In IP-Based Rate Limiting (DDoS Mitigation)
+// Configure Rate Limiting
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -87,7 +94,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configure Swagger
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "School API", Version = "v1" });
@@ -151,7 +157,6 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// Serves fallback static content (like favicons or templates if present in wwwroot)
 app.UseStaticFiles(); 
 
 app.UseCors("AllowFrontend"); 

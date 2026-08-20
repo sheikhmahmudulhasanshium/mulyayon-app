@@ -14,7 +14,7 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = Role.Student)] // Strictly restricted to Student role
+[Authorize(Roles = Role.Student)]
 public class StudentController : ControllerBase
 {
     private readonly MongoDbContext _context;
@@ -23,8 +23,8 @@ public class StudentController : ControllerBase
     {
         _context = context;
     }
-
     // 1. GET: api/student/me
+
     [HttpGet("me")]
     public async Task<IActionResult> GetMyProfile()
     {
@@ -54,8 +54,8 @@ public class StudentController : ControllerBase
             courseNameBn = course?.NameBn
         });
     }
-
     // 2. GET: api/student/subjects
+
     [HttpGet("subjects")]
     public async Task<IActionResult> GetMySubjects()
     {
@@ -63,8 +63,8 @@ public class StudentController : ControllerBase
         var student = await _context.Users.Find(u => u.Id == studentId).FirstOrDefaultAsync();
         if (student == null || string.IsNullOrEmpty(student.CourseId)) 
             return BadRequest(new { message = "Student has no course assignment." });
-
         // Retrieve subjects in student's course
+
         var subjects = await _context.Subjects
             .Find(s => s.CourseId == student.CourseId)
             .ToListAsync();
@@ -74,16 +74,10 @@ public class StudentController : ControllerBase
             .SelectMany(s => s.TeacherIds)
             .Distinct()
             .ToList();
-
         // Join teachers
         var teachers = await _context.Users
             .Find(u => u.Role == Role.Teacher && u.Id != null && allTeacherIds.Contains(u.Id))
-            .Project(u => new 
-            {
-                id = u.Id,
-                name = u.Name,
-                specialties = u.Specialties
-            })
+            .Project(u => new { id = u.Id, name = u.Name, specialties = u.Specialties })
             .ToListAsync();
 
         var teacherMap = teachers.ToDictionary(t => t.id!, t => t);
@@ -102,8 +96,8 @@ public class StudentController : ControllerBase
 
         return Ok(data);
     }
-
     // 3. GET: api/student/assignments (Eliminates N+1 query issue)
+
     [HttpGet("assignments")]
     public async Task<IActionResult> GetMyAssignmentsAndSubmissions()
     {
@@ -111,8 +105,8 @@ public class StudentController : ControllerBase
         var student = await _context.Users.Find(u => u.Id == studentId).FirstOrDefaultAsync();
         if (student == null || string.IsNullOrEmpty(student.CourseId)) 
             return BadRequest(new { message = "Student has no course assignment." });
-
         // Resolve active course subjects
+
         var subjectIds = await _context.Subjects
             .Find(s => s.CourseId == student.CourseId)
             .Project(s => s.Id)
@@ -133,7 +127,7 @@ public class StudentController : ControllerBase
         var submissionMap = submissions.ToDictionary(s => s.AssignmentId, s => s);
 
         var data = assignments.Select(asg => {
-            submissionMap.TryGetValue(asg.Id?? string.Empty, out var sub);
+            submissionMap.TryGetValue(asg.Id ?? string.Empty, out var sub);
             return new
             {
                 assignment = asg,
@@ -200,55 +194,45 @@ public class StudentController : ControllerBase
             totalPage = (int)Math.Ceiling((double)totalCount / pageSize),
             totalCount
         });
-        
     }// GET: api/student/teachers
-[HttpGet("teachers")]
-public async Task<IActionResult> GetMyTeachers()
-{
-    var studentId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-    if (string.IsNullOrEmpty(studentId)) return Unauthorized();
+
+    [HttpGet("teachers")]
+    public async Task<IActionResult> GetMyTeachers()
+    {
+        var studentId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(studentId)) return Unauthorized();
 
     // 1. Find the logged-in student
-    var student = await _context.Users
-        .Find(u => u.Id == studentId && u.Role == Role.Student)
-        .FirstOrDefaultAsync();
+        var student = await _context.Users
+            .Find(u => u.Id == studentId && u.Role == Role.Student)
+            .FirstOrDefaultAsync();
 
-    if (student == null || string.IsNullOrEmpty(student.CourseId))
-    {
-        return BadRequest(new { message = "Student has no course assignment." });
-    }
+        if (student == null || string.IsNullOrEmpty(student.CourseId))
+        {
+            return BadRequest(new { message = "Student has no course assignment." });
+        }
 
     // 2. Retrieve all subjects belonging to the student's CourseId
-    var subjects = await _context.Subjects
-        .Find(s => s.CourseId == student.CourseId)
-        .ToListAsync();
+        var subjects = await _context.Subjects
+            .Find(s => s.CourseId == student.CourseId)
+            .ToListAsync();
 
     // 3. Extract distinct TeacherIds from those subjects
-    var teacherIds = subjects
-        .Where(s => s.TeacherIds != null)
-        .SelectMany(s => s.TeacherIds)
-        .Distinct()
-        .ToList();
+        var teacherIds = subjects
+            .Where(s => s.TeacherIds != null)
+            .SelectMany(s => s.TeacherIds)
+            .Distinct()
+            .ToList();
 
-    if (teacherIds.Count == 0)
-    {
-        return Ok(new List<object>()); // Return empty list safely if no teachers are assigned
+        if (teacherIds.Count == 0) return Ok(new List<object>());// Return empty list safely if no teachers are assigned
+        // 4. Retrieve the profiles of those distinct teachers
+
+
+        var teachers = await _context.Users
+            .Find(u => u.Role == Role.Teacher && u.Id != null && teacherIds.Contains(u.Id))
+            .Project(u => new { id = u.Id, name = u.Name, email = u.Email, specialties = u.Specialties })
+            .ToListAsync();
+
+        return Ok(teachers);
     }
-
-    // 4. Retrieve the profiles of those distinct teachers
-    var teachers = await _context.Users
-        .Find(u => u.Role == Role.Teacher && u.Id != null && teacherIds.Contains(u.Id))
-        .Project(u => new 
-        {
-            id = u.Id,
-            name = u.Name,
-            email = u.Email,
-            specialties = u.Specialties,
-            versions = u.Versions,
-            levels = u.Levels
-        })
-        .ToListAsync();
-
-    return Ok(teachers);
-}
 }

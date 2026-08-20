@@ -10,3 +10,4 @@
 04:04:50-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 2.2625ms
 04:04:50-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
 04:04:50-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 132.5921ms
+04:17:00-21-Aug-2026-----Application is shutting down...
