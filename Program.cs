@@ -3,8 +3,10 @@ using backend.Services;
 using backend.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.FileProviders; // Added for PhysicalFileProvider
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.IO;
 using System.Text;
 using System.Threading.RateLimiting;
 
@@ -154,10 +156,23 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); 
 
-// Swapped Order: CORS must execute before Rate Limiting so that CORS preflight 
-// OPTIONS requests are decorated with headers before potential rate-limiter interceptions.
+// ==========================================
+// FIXED: Explicitly configure and host the uploads path
+// ==========================================
+var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
+// CORS must execute before Rate Limiting
 app.UseCors("AllowFrontend"); 
 app.UseRateLimiter(); 
 
