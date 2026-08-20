@@ -29,7 +29,7 @@ export default async function AssignmentsPage({ params }: { params: Promise<{ la
       navbar={<Navbar locale={locale} />} 
       sidebar={<TeacherSidebar locale={locale} />}
     >
-      <Body />
+      <Body locale={locale}/>
     </PageProvider>
   );
 }
