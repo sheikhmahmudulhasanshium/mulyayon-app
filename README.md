@@ -1,4 +1,3 @@
-````md
 <p align="center">
   <img src="https://raw.githubusercontent.com/sheikhmahmudulhasanshium/mulyayon-app/refs/heads/main/frontend/public/logo/logo-bn.png" alt="Mulyayon App Logo" width="180"/>
 </p>
