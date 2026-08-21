@@ -1,147 +1,109 @@
 "use client"
 
-import { useAssignments } from "@/hooks/common/use-assignments"
-import { AlertCircle, RefreshCw, BookOpen, Calendar, Award } from "lucide-react"
+import * as React from "react"
+import { useStudent } from "@/hooks/student/use-student"
+import { apiClient } from "@/lib/api"
+import { GraduationCap, Award, BookOpen, ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 interface BodyProps {
   locale: "en" | "bn"
 }
 
-const translations = {
-  en: {
-    title: "Student Dashboard",
-    subtitle: "View and submit your ongoing course assignments and tasks.",
-    activeTasks: "Active Assignments",
-    maxMarks: "Marks",
-    dueDate: "Due",
-    noAssignments: "No assignments published for your course yet.",
-    retry: "Retry",
-    loading: "Fetching course tasks...",
-  },
-  bn: {
-    title: "শিক্ষার্থী ড্যাশবোর্ড",
-    subtitle: "আপনার চলমান কোর্সের অ্যাসাইনমেন্ট এবং টাস্কসমূহ দেখুন এবং জমা দিন।",
-    activeTasks: "চলতি অ্যাসাইনমেন্ট",
-    maxMarks: "নম্বর",
-    dueDate: "শেষ সময়",
-    noAssignments: "আপনার কোর্সের জন্য কোনো অ্যাসাইনমেন্ট প্রকাশ করা হয়নি।",
-    retry: "পুনরায় চেষ্টা করুন",
-    loading: "অ্যাসাইনমেন্ট লোড হচ্ছে...",
-  },
-}
-
 export default function Body({ locale }: BodyProps) {
-  const { assignments, loading, error, refresh } = useAssignments()
-  const t = translations[locale]
+  const { getMyAssignments, getMySubjects, loading } = useStudent()
+  const [totalTasks, setTotalTasks] = React.useState(0)
+  const [totalSubjects, setTotalSubjects] = React.useState(0)
+  const [studentName, setStudentName] = React.useState("")
 
-  // Render Loading Skeletons
+  const loadSummary = React.useCallback(async () => {
+    try {
+      const [tasks, subjects, profile] = await Promise.all([
+        getMyAssignments(),
+        getMySubjects(),
+        apiClient("student/me", { method: "GET" })
+      ])
+      
+      setTotalTasks(tasks.length)
+      setTotalSubjects(subjects.length)
+      if (profile && profile.name) {
+        setStudentName(profile.name)
+      }
+    } catch {
+      // Handled silently
+    }
+  }, [getMyAssignments, getMySubjects])
+
+  React.useEffect(() => {
+    let isMounted = true
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        loadSummary()
+      }
+    }, 0)
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [loadSummary])
+
   if (loading) {
     return (
-      <div className="p-6 space-y-6 animate-pulse">
-        <div className="space-y-2">
-          <div className="h-8 w-48 bg-muted rounded"></div>
-          <div className="h-4 w-72 bg-muted rounded"></div>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-40 border rounded-xl bg-background/50"></div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  // Render Network Errors
-  if (error) {
-    return (
-      <div className="p-6 flex flex-col items-center justify-center min-h-[50vh] space-y-4 text-center">
-        <AlertCircle className="h-10 w-10 text-destructive" />
-        <div>
-          <h3 className="text-lg font-semibold">{error}</h3>
-          <p className="text-sm text-muted-foreground">Unable to fetch your assignment tasks.</p>
-        </div>
-        <button
-          onClick={refresh}
-          className="flex items-center gap-2 px-4 h-10 text-sm font-semibold border rounded-lg hover:bg-accent transition-colors"
-        >
-          <RefreshCw className="h-4 w-4" />
-          {t.retry}
-        </button>
+      <div className="p-6 space-y-4 animate-pulse">
+        <div className="h-8 w-48 bg-muted rounded"></div>
+        <div className="h-32 bg-muted rounded"></div>
       </div>
     )
   }
 
   return (
-    <div className="p-6 space-y-6">
-      
-      {/* Header Block */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">{t.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t.subtitle}</p>
-        </div>
-        <button
-          onClick={refresh}
-          className="self-start md:self-auto flex items-center justify-center h-9 px-3 text-xs font-semibold border rounded-lg hover:bg-accent transition-colors gap-1.5"
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-          {locale === "bn" ? "রিফ্রেশ" : "Refresh"}
-        </button>
+    <div className="p-4 sm:p-6 space-y-6">
+      <div className="p-6 border rounded-xl bg-linear-to-r from-blue-900 to-indigo-950 text-white shadow-sm">
+        <h1 className="text-2xl sm:text-3xl font-bold">
+          {locale === "bn" 
+            ? `স্বাগতম, ${studentName || "শিক্ষার্থী"}!` 
+            : `Welcome back, ${studentName || "Student"}!`}
+        </h1>
+        <p className="text-xs text-blue-200 mt-1.5 leading-relaxed">
+          {locale === "bn" 
+            ? "আপনার বিষয়, বাড়ির কাজ এবং গ্রেড রিপোর্ট পরিচালনা করতে বাম দিকের প্যানেল ব্যবহার করুন।" 
+            : "Monitor your enrolled courses, complete assignments, and track evaluation scores."}
+        </p>
       </div>
 
-      {/* Task List Section */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-blue-900/40" />
-          {t.activeTasks}
-        </h3>
-
-        {assignments.length === 0 ? (
-          <div className="text-center p-12 border-2 border-dashed rounded-xl text-muted-foreground max-w-xl mx-auto">
-            {t.noAssignments}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Link href={`/${locale}/student/assignments`} className="p-5 border rounded-xl bg-background hover:shadow-md transition-all flex items-center justify-between group">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              {locale === "bn" ? "চলতি বাড়ির কাজ" : "My Homeworks"}
+            </span>
+            <p className="text-2xl font-black text-slate-900">{totalTasks} {locale === "bn" ? "টি" : "Active"}</p>
           </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {assignments.map((assignment) => {
-              const formattedDeadline = new Date(assignment.deadline).toLocaleDateString(
-                locale === "bn" ? "bn-BD" : "en-US",
-                { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
-              )
+          <GraduationCap className="h-8 w-8 text-blue-900/10 group-hover:text-blue-900/25 transition-colors" />
+        </Link>
 
-              return (
-                <div 
-                  key={assignment.id} 
-                  className="p-6 border rounded-xl bg-background shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4"
-                >
-                  <div className="space-y-2">
-                    <h4 className="font-bold text-slate-900 text-base line-clamp-1">
-                      {assignment.title}
-                    </h4>
-                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                      {assignment.description}
-                    </p>
-                  </div>
-
-                  <div className="border-t pt-3 flex items-center justify-between text-xs text-muted-foreground">
-                    {/* Due Date Indicator */}
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="h-3.5 w-3.5 text-blue-900" />
-                      <span>{t.dueDate}: {formattedDeadline}</span>
-                    </div>
-
-                    {/* Marks Indicator */}
-                    <div className="flex items-center gap-1">
-                      <Award className="h-3.5 w-3.5 text-blue-900" />
-                      <span>{t.maxMarks}: <strong>{assignment.maxMarks}</strong></span>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+        <Link href={`/${locale}/student/subjects`} className="p-5 border rounded-xl bg-background hover:shadow-md transition-all flex items-center justify-between group">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              {locale === "bn" ? "আমার বিষয়সমূহ" : "My Subjects"}
+            </span>
+            <p className="text-2xl font-black text-slate-900">{totalSubjects} {locale === "bn" ? "টি" : "Registered"}</p>
           </div>
-        )}
+          <BookOpen className="h-8 w-8 text-blue-900/10 group-hover:text-blue-900/25 transition-colors" />
+        </Link>
+
+        <Link href={`/${locale}/student/grades`} className="p-5 border rounded-xl bg-background hover:shadow-md transition-all flex items-center justify-between group sm:col-span-2 lg:col-span-1">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              {locale === "bn" ? "গ্রেড রিপোর্ট" : "Reports"}
+            </span>
+            <p className="text-2xl font-black text-slate-900 flex items-center gap-1">
+              {locale === "bn" ? "রিপোর্ট কার্ড" : "Grades"} <ChevronRight className="h-4 w-4" />
+            </p>
+          </div>
+          <Award className="h-8 w-8 text-blue-900/10 group-hover:text-blue-900/25 transition-colors" />
+        </Link>
       </div>
-
     </div>
   )
 }

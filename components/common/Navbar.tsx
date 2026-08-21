@@ -23,6 +23,11 @@ const navLabels = {
     subjects: "Subjects",
     teachers: "Teachers",
     users: "Users",
+    assignments: "Assignments",
+    students: "Students",
+    colleagues: "Colleagues",
+    grades: "Grades",
+    classmates: "Classmates"
   },
   bn: {
     home: "হোম",
@@ -35,6 +40,11 @@ const navLabels = {
     subjects: "বিষয়সমূহ",
     teachers: "শিক্ষকবৃন্দ",
     users: "ব্যবহারকারীগণ",
+    assignments: "অ্যাসাইনমেন্ট",
+    students: "শিক্ষার্থীবৃন্দ",
+    colleagues: "সহকর্মীবৃন্দ",
+    grades: "গ্রেড রিপোর্ট",
+    classmates: "সহপাঠীবৃন্দ"
   },
 }
 
@@ -43,7 +53,6 @@ export default function Navbar({ locale }: NavbarProps) {
   const { user } = useAuth()
   const t = navLabels[locale]
 
-  // Construct dashboard route based on user role
   const getDashboardLink = () => {
     if (!user) return null
     const roleLower = user.role.toLowerCase()
@@ -55,9 +64,7 @@ export default function Navbar({ locale }: NavbarProps) {
 
   const dashboardLink = getDashboardLink()
 
-  // Helper to style active navigation links
   const getLinkClass = (href: string) => {
-    // Check direct equality or subpath mapping (for sub-routes)
     const isActive = pathname === href || (href !== `/${locale}` && pathname.startsWith(href))
     return cn(
       "inline-flex h-9 items-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-muted",
@@ -68,22 +75,17 @@ export default function Navbar({ locale }: NavbarProps) {
   return (
     <nav className="border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between px-4 sm:px-6">
-        
-        {/* Navigation Links */}
         <div className="flex flex-wrap items-center gap-1">
           <Link href={`/${locale}`} className={getLinkClass(`/${locale}`)}>
             {t.home}
           </Link>
-
           <Link href={`/${locale}/about`} className={getLinkClass(`/${locale}/about`)}>
             {t.about}
           </Link>
-
           <Link href={`/${locale}/faq`} className={getLinkClass(`/${locale}/faq`)}>
             {t.faq}
           </Link>
 
-          {/* Core Panel Link */}
           {dashboardLink && (
             <Link href={dashboardLink.href} className={getLinkClass(dashboardLink.href)}>
               <span className="font-semibold text-blue-900 dark:text-blue-400">
@@ -92,7 +94,6 @@ export default function Navbar({ locale }: NavbarProps) {
             </Link>
           )}
 
-          {/* Additional Admin navigation options */}
           {user?.role === "Admin" && (
             <div className="hidden md:flex items-center gap-1 border-l pl-2 ml-1">
               <Link href={`/${locale}/admin/courses`} className={getLinkClass(`/${locale}/admin/courses`)}>
@@ -109,11 +110,46 @@ export default function Navbar({ locale }: NavbarProps) {
               </Link>
             </div>
           )}
+
+          {user?.role === "Teacher" && (
+            <div className="hidden md:flex items-center gap-1 border-l pl-2 ml-1">
+              <Link href={`/${locale}/teacher/courses`} className={getLinkClass(`/${locale}/teacher/courses`)}>
+                {t.courses}
+              </Link>
+              <Link href={`/${locale}/teacher/subjects`} className={getLinkClass(`/${locale}/teacher/subjects`)}>
+                {t.subjects}
+              </Link>
+              <Link href={`/${locale}/teacher/assignments`} className={getLinkClass(`/${locale}/teacher/assignments`)}>
+                {t.assignments}
+              </Link>
+              <Link href={`/${locale}/teacher/students`} className={getLinkClass(`/${locale}/teacher/students`)}>
+                {t.students}
+              </Link>
+              <Link href={`/${locale}/teacher/colleagues`} className={getLinkClass(`/${locale}/teacher/colleagues`)}>
+                {t.colleagues}
+              </Link>
+            </div>
+          )}
+
+          {user?.role === "Student" && (
+            <div className="hidden md:flex items-center gap-1 border-l pl-2 ml-1">
+              <Link href={`/${locale}/student/subjects`} className={getLinkClass(`/${locale}/student/subjects`)}>
+                {t.subjects}
+              </Link>
+              <Link href={`/${locale}/student/assignments`} className={getLinkClass(`/${locale}/student/assignments`)}>
+                {t.assignments}
+              </Link>
+              <Link href={`/${locale}/student/grades`} className={getLinkClass(`/${locale}/student/grades`)}>
+                {t.grades}
+              </Link>
+              <Link href={`/${locale}/student/classmates`} className={getLinkClass(`/${locale}/student/classmates`)}>
+                {t.classmates}
+              </Link>
+            </div>
+          )}
         </div>
 
-        {/* Global Controls */}
         <div className="flex items-center gap-3">
-          {/* Theme Toggle */}
           <ModeToggle />
         </div>
       </div>

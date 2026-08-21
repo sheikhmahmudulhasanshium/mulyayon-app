@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
   // Tell Next.js 16 to proceed with Turbopack for compilation builds
   // while keeping Webpack custom watch configurations intact for dev mode.
   turbopack: {},
+  // FIXED: Allow Next.js to securely render and optimize image assets hosted on Cloudinary
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+    ],
+  },
 
   webpack: (
     config: CustomWebpackConfig, 
