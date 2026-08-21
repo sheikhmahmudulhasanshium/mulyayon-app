@@ -609,21 +609,36 @@ Teacher
 
 ---
 
-## 14. Documented Assumptions
+## 14. Upstream Synchronization Workflow
 
-### Database Model
+If subsequent developments occur within the individual, standalone upstream repositories, those updates can be integrated into this consolidated repository.
 
-MongoDB is used as the primary document database.
+To synchronize these changes, navigate to the `mulyayon-app` root directory and execute the corresponding commands.
 
-Application relationships are represented through document fields and referenced IDs rather than traditional relational joins.
+### Integrating Frontend Updates
 
-### Timezone
+To retrieve and merge modifications from the standalone frontend repository:
 
-Assignment deadlines and submission timestamps are processed using UTC-based timestamps to reduce timezone-related discrepancies.
+```cmd
+git subtree pull --prefix=frontend frontend-upstream main --squash
+````
 
-### Submission Rules
+### Integrating Backend Updates
 
-A student's ability to modify a submission is subject to the assignment deadline and the current evaluation state.
+To retrieve and merge modifications from the standalone backend repository:
+
+```cmd
+git subtree pull --prefix=backend backend-upstream main --squash
+```
+
+### Publishing Changes to the Remote Repository
+
+To upload the integrated updates to the remote combined repository on GitHub:
+
+```cmd
+git push origin main
+```
+
 
 ---
 
