@@ -11,3 +11,116 @@
 04:04:50-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
 04:04:50-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 132.5921ms
 04:17:00-21-Aug-2026-----Application is shutting down...
+04:55:35-21-Aug-2026-----server-online-----id:system_kernel
+04:55:35-21-Aug-2026-----User profile is available. Using 'C:\Users\Dell\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+04:55:35-21-Aug-2026-----Now listening on: http://localhost:5000
+04:55:35-21-Aug-2026-----Application started. Press Ctrl+C to shut down.
+04:55:35-21-Aug-2026-----Hosting environment: Development
+04:55:35-21-Aug-2026-----Content root path: F:\Job Apply\project\onno-rokom\backend
+04:55:35-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:55:35-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 8.5881ms
+04:55:36-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:55:36-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 159.8768ms
+04:55:37-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/index.html - null null
+04:55:37-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/index.html - 200 null text/html;charset=utf-8 61.8689ms
+04:55:37-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - null null
+04:55:37-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13732 application/javascript; charset=utf-8 0.3176ms
+04:55:38-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - null null
+04:55:38-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 19.3649ms
+04:57:52-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Submissions/assignment/6a86d7526046b26053440310 - null null
+04:57:52-21-Aug-2026-----Failed to determine the https port for redirect.
+04:57:53-21-Aug-2026-----Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 10:57:52 PM'.
+   at Microsoft.IdentityModel.Tokens.ValidatorUtilities.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+04:57:53-21-Aug-2026-----Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 10:57:52 PM'.
+04:57:53-21-Aug-2026-----Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+04:57:53-21-Aug-2026-----AuthenticationScheme: Bearer was challenged.
+04:57:53-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Submissions/assignment/6a86d7526046b26053440310 - 401 0 null 1030.6308ms
+04:58:05-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/me - null null
+04:58:05-21-Aug-2026-----Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 10:58:05 PM'.
+   at Microsoft.IdentityModel.Tokens.ValidatorUtilities.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+04:58:05-21-Aug-2026-----Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 10:58:05 PM'.
+04:58:05-21-Aug-2026-----Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Teacher)
+04:58:05-21-Aug-2026-----AuthenticationScheme: Bearer was challenged.
+04:58:05-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/me - 401 0 null 12.468ms
+04:59:08-21-Aug-2026-----Request starting HTTP/1.1 POST http://localhost:5000/api/Auth/login - application/json 67
+04:59:08-21-Aug-2026-----CORS policy execution failed.
+04:59:08-21-Aug-2026-----Request origin http://localhost:5000 does not have permission to access the resource.
+04:59:08-21-Aug-2026-----Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 10:59:08 PM'.
+   at Microsoft.IdentityModel.Tokens.ValidatorUtilities.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+04:59:08-21-Aug-2026-----Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 10:59:08 PM'.
+04:59:08-21-Aug-2026-----Executing endpoint 'backend.Controllers.AuthController.Login (backend)'
+04:59:08-21-Aug-2026-----Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(backend.DTOs.LoginDto) on controller backend.Controllers.AuthController (backend).
+04:59:08-21-Aug-2026-----user-login-success-----id:6a8631b1a702d3681fd7aada-----type:Teacher
+04:59:08-21-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType13`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType14`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+04:59:09-21-Aug-2026-----Executed action backend.Controllers.AuthController.Login (backend) in 619.7782ms
+04:59:09-21-Aug-2026-----Executed endpoint 'backend.Controllers.AuthController.Login (backend)'
+04:59:09-21-Aug-2026-----Request finished HTTP/1.1 POST http://localhost:5000/api/Auth/login - 200 null application/json; charset=utf-8 666.1952ms
+04:59:45-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Submissions/assignment/6a86d7526046b26053440310 - null null
+04:59:45-21-Aug-2026-----Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 10:59:45 PM'.
+   at Microsoft.IdentityModel.Tokens.ValidatorUtilities.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+04:59:45-21-Aug-2026-----Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 10:59:45 PM'.
+04:59:45-21-Aug-2026-----Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+04:59:45-21-Aug-2026-----AuthenticationScheme: Bearer was challenged.
+04:59:45-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Submissions/assignment/6a86d7526046b26053440310 - 401 0 null 3.497ms
+05:00:00-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/me - null null
+05:00:00-21-Aug-2026-----Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 11:00:00 PM'.
+   at Microsoft.IdentityModel.Tokens.ValidatorUtilities.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+05:00:00-21-Aug-2026-----Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '20-Aug-26 10:15:34 PM', Current time (UTC): '20-Aug-26 11:00:00 PM'.
+05:00:00-21-Aug-2026-----Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Teacher)
+05:00:00-21-Aug-2026-----AuthenticationScheme: Bearer was challenged.
+05:00:00-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/me - 401 0 null 3.0695ms
+05:00:41-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Submissions/assignment/6a86d7526046b26053440310 - null null
+05:00:41-21-Aug-2026-----Executing endpoint 'backend.Controllers.SubmissionsController.GetAssignmentSubmissions (backend)'
+05:00:41-21-Aug-2026-----Route matched with {action = "GetAssignmentSubmissions", controller = "Submissions"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAssignmentSubmissions(System.String) on controller backend.Controllers.SubmissionsController (backend).
+05:00:41-21-Aug-2026-----Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[backend.Models.Submission, backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+05:00:41-21-Aug-2026-----Executed action backend.Controllers.SubmissionsController.GetAssignmentSubmissions (backend) in 228.9082ms
+05:00:41-21-Aug-2026-----Executed endpoint 'backend.Controllers.SubmissionsController.GetAssignmentSubmissions (backend)'
+05:00:41-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Submissions/assignment/6a86d7526046b26053440310 - 200 null application/json; charset=utf-8 272.4184ms
+05:03:04-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Submissions/6a877002050ad903991e3287 - null null
+05:03:04-21-Aug-2026-----Executing endpoint 'backend.Controllers.SubmissionsController.GetSubmissionById (backend)'
+05:03:04-21-Aug-2026-----Route matched with {action = "GetSubmissionById", controller = "Submissions"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetSubmissionById(System.String) on controller backend.Controllers.SubmissionsController (backend).
+05:03:04-21-Aug-2026-----Executing OkObjectResult, writing value of type 'backend.Models.Submission'.
+05:03:04-21-Aug-2026-----Executed action backend.Controllers.SubmissionsController.GetSubmissionById (backend) in 112.1205ms
+05:03:04-21-Aug-2026-----Executed endpoint 'backend.Controllers.SubmissionsController.GetSubmissionById (backend)'
+05:03:04-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Submissions/6a877002050ad903991e3287 - 200 null application/json; charset=utf-8 117.1382ms
+05:10:32-21-Aug-2026-----Request starting HTTP/1.1 POST http://localhost:5000/api/Submissions/6a877002050ad903991e3287/grade - application/json 173
+05:10:32-21-Aug-2026-----CORS policy execution failed.
+05:10:32-21-Aug-2026-----Request origin http://localhost:5000 does not have permission to access the resource.
+05:10:32-21-Aug-2026-----Executing endpoint 'backend.Controllers.SubmissionsController.GradeSubmission (backend)'
+05:10:32-21-Aug-2026-----Route matched with {action = "GradeSubmission", controller = "Submissions"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GradeSubmission(System.String, backend.DTOs.GradeSubmissionDto) on controller backend.Controllers.SubmissionsController (backend).
+05:10:33-21-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType6`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+05:10:33-21-Aug-2026-----Executed action backend.Controllers.SubmissionsController.GradeSubmission (backend) in 282.8266ms
+05:10:33-21-Aug-2026-----Executed endpoint 'backend.Controllers.SubmissionsController.GradeSubmission (backend)'
+05:10:33-21-Aug-2026-----Request finished HTTP/1.1 POST http://localhost:5000/api/Submissions/6a877002050ad903991e3287/grade - 200 null application/json; charset=utf-8 288.4579ms
+05:11:04-21-Aug-2026-----Request starting HTTP/1.1 GET http://localhost:5000/api/Teacher/stats - null null
+05:11:04-21-Aug-2026-----Executing endpoint 'backend.Controllers.TeacherController.GetTeacherStats (backend)'
+05:11:04-21-Aug-2026-----Route matched with {action = "GetTeacherStats", controller = "Teacher"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetTeacherStats() on controller backend.Controllers.TeacherController (backend).
+05:11:05-21-Aug-2026-----Executing OkObjectResult, writing value of type '<>f__AnonymousType31`4[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType32`4[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+05:11:05-21-Aug-2026-----Executed action backend.Controllers.TeacherController.GetTeacherStats (backend) in 373.5378ms
+05:11:05-21-Aug-2026-----Executed endpoint 'backend.Controllers.TeacherController.GetTeacherStats (backend)'
+05:11:05-21-Aug-2026-----Request finished HTTP/1.1 GET http://localhost:5000/api/Teacher/stats - 200 null application/json; charset=utf-8 390.7338ms
+05:12:12-21-Aug-2026-----Application is shutting down...

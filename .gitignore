@@ -9,7 +9,7 @@
 *.sln.docstates
 
 # Local secrets (Never upload to GitHub)
-appsettings.Development.json
+//appsettings.Development.json
 *.env
 atlas-credentials.env
 
