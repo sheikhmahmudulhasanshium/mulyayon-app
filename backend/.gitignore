@@ -1,0 +1,22 @@
+# .NET Build outputs
+[Bb]in/
+[Oo]bj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local secrets (Never upload to GitHub)
+appsettings.Development.json
+*.env
+atlas-credentials.env
+
+# Node / Next.js outputs (For when we build the frontend later)
+node_modules/
+.next/
+out/
+build/
+.env.local
+todo
