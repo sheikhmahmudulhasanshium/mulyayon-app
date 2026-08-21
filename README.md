@@ -94,8 +94,23 @@ Mulyayon provides separate portals and permissions for three primary roles.
   - Student
 
 ---
+### 3.1. Repository Structure
 
-## 3. Project Structure
+This repository is structured to manage the complete application codebase in one location while preserving individual deployment pipelines:
+
+*   **Parent Consolidated Repository:** [mulyayon-app](https://github.com/sheikhmahmudulhasanshium/mulyayon-app)
+*   **Frontend Source Directory:** `/frontend` (Originated from [onno-rokom-frontend](https://github.com/sheikhmahmudulhasanshium/onno-rokom-frontend))
+*   **Backend Source Directory:** `/backend` (Originated from [onno-rokom-backend](https://github.com/sheikhmahmudulhasanshium/onno-rokom-backend))
+
+---
+
+### 3.2. Live Deployments
+
+*   **Frontend Service:** [https://mulyayon.vercel.app/](https://mulyayon.vercel.app/)
+*   **Backend API Documentation:** [https://onno-rokom-backend.onrender.com/index.html](https://onno-rokom-backend.onrender.com/index.html)
+
+
+### 3.3. Project Structure
 
 The repository contains both applications inside the same project:
 
