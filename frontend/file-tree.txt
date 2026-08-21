@@ -1,0 +1,91 @@
+﻿Project Map for: \Job Apply\project\onno-rokom\frontend\onno-rokom-frontend
+
+🌳 Complete Project Tree (hiding major noise folders):
+onno-rokom-frontend/
+├── 📁 app
+│   ├── 📁 [lang]
+│   └── 📄 globals.css
+├── 📁 components
+│   ├── 📁 common
+│   │   ├── 📁 buttons
+│   │   │   ├── 📄 AuthButton.tsx
+│   │   │   ├── 📄 LanguageToggleButton.tsx
+│   │   │   └── 📄 ModeToggleButton.tsx
+│   │   ├── 📄 Footer.tsx
+│   │   ├── 📄 Header.tsx
+│   │   ├── 📄 Navbar.tsx
+│   │   ├── 📄 Sidebar.tsx
+│   │   └── 📄 SystemHealthIndicator.tsx
+│   ├── 📁 forms
+│   │   └── 📄 sign-in-form.tsx
+│   ├── 📁 modals
+│   └── 📁 ui
+│       ├── 📄 accordion.tsx
+│       ├── 📄 button-group.tsx
+│       ├── 📄 button.tsx
+│       ├── 📄 card.tsx
+│       ├── 📄 dropdown-menu.tsx
+│       ├── 📄 form.tsx
+│       ├── 📄 input.tsx
+│       ├── 📄 label.tsx
+│       ├── 📄 select.tsx
+│       └── 📄 separator.tsx
+├── 📁 hooks
+│   ├── 📁 admin
+│   │   ├── 📄 use-courses.ts
+│   │   ├── 📄 use-stats.ts
+│   │   ├── 📄 use-subjects.ts
+│   │   ├── 📄 use-teachers.ts
+│   │   └── 📄 use-users.ts
+│   ├── 📁 common
+│   │   ├── 📄 use-assignments.ts
+│   │   ├── 📄 use-health.ts
+│   │   ├── 📄 use-public.ts
+│   │   ├── 📄 use-submissions.ts
+│   │   └── 📄 use-upload.ts
+│   └── 📁 teacher
+│       ├── 📄 use-teacher-stats.ts
+│       └── 📄 use-teacher-students.ts
+├── 📁 lib
+│   ├── 📄 api.ts
+│   └── 📄 utils.ts
+├── 📁 providers
+│   ├── 📄 auth-provider.tsx
+│   ├── 📄 language-provider.tsx
+│   ├── 📄 page-provider.tsx
+│   └── 📄 theme-provider.tsx
+├── 📁 public
+│   ├── 📁 favicon
+│   │   ├── 📄 android-chrome-192x192.png
+│   │   ├── 📄 android-chrome-512x512.png
+│   │   ├── 📄 apple-touch-icon.png
+│   │   ├── 📄 favicon-16x16.png
+│   │   ├── 📄 favicon-32x32.png
+│   │   ├── 📄 favicon.ico
+│   │   └── 📄 site.webmanifest
+│   └── 📁 logo
+│       ├── 📄 icon.png
+│       ├── 📄 icon.svg
+│       ├── 📄 logo-bn.png
+│       ├── 📄 logo-bn.svg
+│       ├── 📄 logo-en.png
+│       └── 📄 logo-en.svg
+├── 📁 types
+│   └── 📄 api.tsx
+├── 📄 .env
+├── 📄 .gitignore
+├── 📄 AGENTS.md
+├── 📄 CLAUDE.md
+├── 📄 components.json
+├── 📄 eslint.config.mjs
+├── 📄 file-tree.txt
+├── 📄 next-env.d.ts
+├── 📄 next.config.ts
+├── 📄 package.json
+├── 📄 pnpm-lock.yaml
+├── 📄 pnpm-workspace.yaml
+├── 📄 postcss.config.mjs
+├── 📄 proxy.ts
+├── 📄 README.md
+└── 📄 tsconfig.json
+

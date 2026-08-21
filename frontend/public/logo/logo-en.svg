@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1600" height="800" viewBox="0 0 1600 800">
+  <title>Mulyayon — Let Your Work Speak</title>
+  <desc>Flat 2:1 transparent logo with document and checkmark icon, Mulyayon wordmark and English tagline.</desc>
+
+  <!-- Document and checkmark icon -->
+  <g transform="translate(75 120)">
+    <path d="M0 0H285L405 120V560H0Z"
+          fill="none" stroke="#101A72" stroke-width="30"
+          stroke-linejoin="miter"/>
+    <path d="M285 0V120H405" fill="#38577D"/>
+
+    <path d="M70 180H245" stroke="#38577D" stroke-width="18"/>
+    <path d="M70 235H275" stroke="#38577D" stroke-width="18"/>
+    <path d="M70 290H225" stroke="#38577D" stroke-width="18"/>
+
+    <path d="M70 365L145 440L330 255"
+          fill="none" stroke="#101A72" stroke-width="34"
+          stroke-linecap="square" stroke-linejoin="miter"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(555 0)">
+    <text x="0" y="365"
+          font-family="Arial, Helvetica, sans-serif"
+          font-size="170"
+          font-weight="700"
+          letter-spacing="-5"
+          fill="#101A72">Mulyayon</text>
+
+    <line x1="0" y1="425" x2="1000" y2="425"
+          stroke="#101A72" stroke-width="8"/>
+
+    <!-- Tagline -->
+    <text x="0" y="545"
+          font-family="Arial, Helvetica, sans-serif"
+          font-size="76"
+          font-weight="400"
+          fill="#38577D">Let Your Work Speak</text>
+  </g>
+</svg>

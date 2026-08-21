@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>মূল্যায়ন document check icon</title>
+  <desc>Minimal geometric document and checkmark icon for মূল্যায়ন</desc>
+
+  <!-- Document -->
+  <path
+    d="M92 48h224l104 104v312H92z"
+    fill="none"
+    stroke="#101A72"
+    stroke-width="32"
+    stroke-linejoin="miter"/>
+
+  <!-- Folded corner -->
+  <path
+    d="M316 48v104h104"
+    fill="#38577D"/>
+
+  <!-- Document lines -->
+  <path d="M145 195h145" stroke="#38577D" stroke-width="18"/>
+  <path d="M145 245h145" stroke="#38577D" stroke-width="18"/>
+  <path d="M145 295h110" stroke="#38577D" stroke-width="18"/>
+
+  <!-- Checkmark -->
+  <path
+    d="M145 348l58 58 142-142"
+    fill="none"
+    stroke="#101A72"
+    stroke-width="34"
+    stroke-linecap="square"
+    stroke-linejoin="miter"/>
+</svg>
