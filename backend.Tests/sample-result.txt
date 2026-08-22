@@ -1,0 +1,272 @@
+
+F:\Job Apply\project\onno-rokom\mulyayon-app\backend.Tests>dotnet test --logger "console;verbosity=detailed"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  backend -> F:\Job Apply\project\onno-rokom\mulyayon-app\backend\bin\Debug\net8.0\backend.dll
+  backend.Tests -> F:\Job Apply\project\onno-rokom\mulyayon-app\backend.Tests\bin\Debug\net8.0\backend.Tests.dll
+Test run for F:\Job Apply\project\onno-rokom\mulyayon-app\backend.Tests\bin\Debug\net8.0\backend.Tests.dll (.NETCoreApp,Version=v8.0)
+VSTest version 17.11.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+F:\Job Apply\project\onno-rokom\mulyayon-app\backend.Tests\bin\Debug\net8.0\backend.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.30)
+[xUnit.net 00:00:00.69]   Discovering: backend.Tests
+[xUnit.net 00:00:00.73]   Discovered:  backend.Tests
+[xUnit.net 00:00:00.74]   Starting:    backend.Tests
+  Passed backend.Tests.ValidationTests.CreateAssignmentDto_RejectsMissingTitle [569 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: CreateAssignmentDto_RejectsMissingTitle
+ DATA: DTO with Title='' (Empty string)
+ EXPECTED: Validation fails with error: 'Title is required'
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.ValidationTests.SubmitAnswerDto_RequiresAssignmentId [1 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: SubmitAnswerDto_RequiresAssignmentId
+ DATA: SubmitAnswerDto with AssignmentId=null (Missing)
+ EXPECTED: Validation fails with error: 'Assignment ID is required'
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.ValidationTests.CreateAssignmentDto_AcceptsValidValues [4 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: CreateAssignmentDto_AcceptsValidValues
+ DATA: Title='Assignment', MaxMarks=100, SubjectId='subject-1'
+ EXPECTED: Validation succeeds with no errors
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.ValidationTests.CreateAssignmentDto_RejectsMaxMarksAboveOneThousand [< 1 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: CreateAssignmentDto_RejectsMaxMarksAboveOneThousand
+ DATA: DTO with MaxMarks=1001
+ EXPECTED: Validation fails (MaxMarks cannot exceed 1000)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.ValidationTests.CreateAssignmentDto_RejectsMaxMarksBelowOne [< 1 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: CreateAssignmentDto_RejectsMaxMarksBelowOne
+ DATA: DTO with MaxMarks=0
+ EXPECTED: Validation fails (MaxMarks must be at least 1)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.TokenServiceTests.GenerateToken_SetsFutureExpiry [3 s]
+  Standard Output Messages:
+ ==================================================
+ TEST: GenerateToken_SetsFutureExpiry
+ DATA: ExpiryInMinutes=30, BufferRange=(07:48:14 to 07:50:14)
+ EXPECTED: Token 'ValidTo' field falls approximately 30 minutes in the future
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.TokenServiceTests.GenerateToken_ReturnsReadableJwt [3 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: GenerateToken_ReturnsReadableJwt
+ DATA: UserId='user-1', Name='Test User', Email='test@example.com', Role='Student'
+ EXPECTED: Successfully generated, non-empty, well-formed JWT string
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.TokenServiceTests.GenerateToken_ContainsExpectedIdentityClaims [2 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: GenerateToken_ContainsExpectedIdentityClaims
+ DATA: UserId='user-123', Name='Student One', Email='student@example.com', Role='Student'
+ EXPECTED: Generated JWT claims contain exact matching identity values
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.TokenServiceTests.GenerateToken_ContainsConfiguredIssuerAndAudience [3 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: GenerateToken_ContainsConfiguredIssuerAndAudience
+ DATA: TargetIssuer='mulyayon-test', TargetAudience='mulyayon-client'
+ EXPECTED: Token contains matching Issuer and Audience claims
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.UpdateSubmission_AfterDeadline_ReturnsBadRequest [3 s]
+  Standard Output Messages:
+ ==================================================
+ TEST: UpdateSubmission_AfterDeadline_ReturnsBadRequest
+ DATA: SubmissionId='submission-1', Deadline=Past (DateTime.UtcNow.AddMinutes(-1))
+ EXPECTED: BadRequestObjectResult (Cannot edit submission after deadline)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.SubmitAnswer_DuplicateSubmission_ReturnsBadRequest [8 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: SubmitAnswer_DuplicateSubmission_ReturnsBadRequest
+ DATA: AssignmentId='assignment-1', StudentId='student-1' (Existing submission found)
+ EXPECTED: BadRequestObjectResult (Duplicate submissions are blocked)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.SubmitAnswer_AfterDeadline_ReturnsBadRequest [2 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: SubmitAnswer_AfterDeadline_ReturnsBadRequest
+ DATA: AssignmentId='assignment-1', Deadline=Past (DateTime.UtcNow.AddMinutes(-1))
+ EXPECTED: BadRequestObjectResult (Late submissions are rejected)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.UpdateSubmission_GradedSubmission_ReturnsBadRequest [3 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: UpdateSubmission_GradedSubmission_ReturnsBadRequest
+ DATA: SubmissionId='submission-1', Status='Graded', NewAnswer='changed'
+ EXPECTED: BadRequestObjectResult (Graded submissions cannot be modified)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.SubmitAnswer_UnpublishedAssignment_ReturnsBadRequest [2 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: SubmitAnswer_UnpublishedAssignment_ReturnsBadRequest
+ DATA: AssignmentId='assignment-1', IsPublished=False
+ EXPECTED: BadRequestObjectResult (Cannot submit to drafts)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.SubmitAnswer_WithoutStudentClaim_ReturnsUnauthorized [< 1 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: SubmitAnswer_WithoutStudentClaim_ReturnsUnauthorized
+ DATA: AssignmentId='assignment-1', User='Anonymous' (No claims provided)
+ EXPECTED: UnauthorizedResult (Must be logged in as student)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.UpdateSubmission_OwnershipMismatch_ReturnsForbid [2 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: UpdateSubmission_OwnershipMismatch_ReturnsForbid
+ DATA: SubmissionOwner='another-student', RequestingUser='student-1', SubmissionId='submission-1'
+ EXPECTED: ForbidResult (Cannot modify another student's submission)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.GradeSubmission_MarksOutsideMaxRange_ReturnsBadRequest(marks: 101) [6 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: GradeSubmission_MarksOutsideMaxRange_ReturnsBadRequest
+ DATA: InputMarks=101, MaxMarks=100, LimitRange=(0 to 100)
+ EXPECTED: BadRequestObjectResult (Marks must fall within the range 0 to MaxMarks)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.GradeSubmission_MarksOutsideMaxRange_ReturnsBadRequest(marks: -1) [2 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: GradeSubmission_MarksOutsideMaxRange_ReturnsBadRequest
+ DATA: InputMarks=-1, MaxMarks=100, LimitRange=(0 to 100)
+ EXPECTED: BadRequestObjectResult (Marks must fall within the range 0 to MaxMarks)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.GradeSubmission_TeacherCannotGradeAnotherTeachersAssignment [3 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: GradeSubmission_TeacherCannotGradeAnotherTeachersAssignment
+ DATA: AssignmentOwner='teacher-owner', RequestingTeacher='teacher-other', SubmissionId='submission-1'
+ EXPECTED: ForbidResult (Only the original teacher who created the assignment can grade it)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.GradeSubmission_RejectedSubmission_ClearsMarksAndReturnsOk [24 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: GradeSubmission_RejectedSubmission_ClearsMarksAndReturnsOk
+ DATA: Status='Rejected', Marks=0, Feedback='Please revise'
+ EXPECTED: OkObjectResult (Rejections reset grades and successfully pass the check)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.SubmissionControllerTests.SubmitAnswer_ValidSubmission_CreatesSubmittedRecord [15 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: SubmitAnswer_ValidSubmission_CreatesSubmittedRecord
+ DATA: AssignmentId='assignment-1', StudentId='student-1', Answer='my answer'
+ EXPECTED: CreatedAtActionResult (Valid submission successfully saved)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.AssignmentControllerTests.UpdateAssignment_AnotherTeachersAssignment_ReturnsForbid [3 s]
+  Standard Output Messages:
+ ==================================================
+ TEST: UpdateAssignment_AnotherTeachersAssignment_ReturnsForbid
+ DATA (Input DTO): NewTitle='Attempted change', CurrentTeacher='teacher-other', OwnerTeacher='teacher-owner'
+ EXPECTED: ForbidResult (Cannot modify assignments created by other teachers)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.AssignmentControllerTests.CreateAssignment_SubjectMissing_ReturnsBadRequest [31 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: CreateAssignment_SubjectMissing_ReturnsBadRequest
+ DATA (Input DTO): Title='Math Homework', SubjectId='subject-1'
+ EXPECTED: BadRequestObjectResult (Subject missing in database)
+ RESULT: Passed
+ ==================================================
+
+
+  Passed backend.Tests.AssignmentControllerTests.CreateAssignment_TeacherNotAssignedToSubject_ReturnsForbid [55 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: CreateAssignment_TeacherNotAssignedToSubject_ReturnsForbid
+ DATA (Input DTO): Title='Math Homework', SubjectId='subject-1', TeacherId='teacher-1'
+ EXPECTED: ForbidResult (Teacher is not assigned to this subject)
+ RESULT: Passed
+ ==================================================
+
+
+[xUnit.net 00:00:04.55]   Finished:    backend.Tests
+  Passed backend.Tests.AssignmentControllerTests.CreateAssignment_ValidTeacherAndSubject_CreatesAssignment [12 ms]
+  Standard Output Messages:
+ ==================================================
+ TEST: CreateAssignment_ValidTeacherAndSubject_CreatesAssignment
+ DATA (Input DTO): Title='Math Homework', SubjectId='subject-1', MaxMarks=100, IsPublished=True
+ EXPECTED: CreatedAtActionResult (Valid assignment successfully saved)
+ RESULT: Passed
+ ==================================================
+
+
+
+Test Run Successful.
+Total tests: 25
+     Passed: 25
+ Total time: 8.5777 Seconds
